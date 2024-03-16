@@ -1,3 +1,3 @@
 This is the code for paper submission.
 
-The code will be relased here.
+The code will be released here.
