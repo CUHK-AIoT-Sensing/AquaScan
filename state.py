@@ -356,7 +356,7 @@ class state_transfer:
         '''
         frequency_score_ratio=frequency_score['latest']#/frequency_score['len']        
         #print(frequency_score_ratio)
-        if frequency_score_ratio>=6: #for current sensing parameters, can be modified
+        if frequency_score_ratio>=8: #for current sensing parameters, can be modified, in experiments, the length of motion is fixed.
             #print(self.dronwing_mark["Frequency"][0])
             return self.dronwing_mark["Frequency"][0]
         else:
