@@ -434,7 +434,7 @@ def process_one_pic(sonar_data, occupancy=False):
 
     result_poses = []
     K_size=5
-    while obj_physical_filter(object_poses,6000,40,100):
+    while obj_physical_filter(object_poses,18000,120,300): #rescale,size enlarge.
         K_size+=2
         denoise_configs['denoise2']['blur_size']=K_size
         denoised_object_poses = localize_one_pic(sonar_data, **denoise_configs['denoise2'])
