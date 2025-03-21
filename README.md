@@ -2,7 +2,7 @@
 
 ## This repo contains the code, deployment instructions, and limitations of the current design.
 
-Waiting for new code and ReadMe.md updated.
+Waiting for new code and README.md updated.
 
 ## Acknowledgement
 
