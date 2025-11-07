@@ -5,6 +5,7 @@ import os
 import time
 matplotlib.rc('pdf', fonttype=42)
 plt.rc('font', family='serif', size=12)
+
 def read_state_list(path):
     f=open(path,'r')
     lines=f.readlines()
