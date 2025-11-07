@@ -2,6 +2,7 @@ import numpy as np
 import os
 import time
 
+
 def calculate_iou_on_small(obj1, obj2):
     ymin = max(obj1[0], obj2[0])
     ymax = min(obj1[1], obj2[1])
