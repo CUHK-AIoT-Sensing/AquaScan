@@ -2,5 +2,5 @@
 
 ## This repo contains the code, deployment instructions, and limitations of the current design. 
 
-Waiting for new code and README.md updated.
+This is the old version of code. Waiting for new code and README.md updated.
 
