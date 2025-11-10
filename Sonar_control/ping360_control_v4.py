@@ -322,7 +322,7 @@ if __name__ == '__main__':
                         1,
                         0
                     )
-                    p.wait_message([definitions.PING360_DEVICE_DATA], 0.5)
+                    p.wait_message([definitions.PING360_DEVICE_DATA], 0.5) #there is no docu for wait_message now, if you worry about this function , you can use ping360 document to check new functions
                     new_message = [int(j) for j in p._data]
                 # else:
                 #     # fake data
