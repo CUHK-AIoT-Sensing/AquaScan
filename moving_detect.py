@@ -1,7 +1,7 @@
 import numpy as np
 import os
 import time
-
+import argparse
 
 def calculate_iou_on_small(obj1, obj2):
     ymin = max(obj1[0], obj2[0])
@@ -58,14 +58,11 @@ def read_txt(path, angle_range=400,bias=0):
         start_angle: start angle of sonar data
         end_angle: end angle of sonar data
     '''
-    #print(path)
-    #s=path.split('/')[-1]
     path_seg=path.split('/')[-1]
     if '_' in path_seg:
         file_name=str(path_seg.split('_')[1])
     else:
         file_name=path_seg
-    #print(file_name)
     file_order=file_name.split('.')[0]
     sonar_data = np.zeros((angle_range, 500))
     with open(path, 'r') as f:
@@ -81,25 +78,33 @@ def read_txt(path, angle_range=400,bias=0):
                     sonar_data[int(angle)] = data
     return sonar_data, int(start_angle), int(end_angle)
 
-def read_BBox_data(path):
-    f=open(path)
+def read_trace_single(file):
+    f=open(file,'r')
     lines=f.readlines()
-    lines=list(set(lines))
     pos=[]
+    seg=[]
+    timestamp=[]
+    state=[]
     for line in lines:
-        data=line.split(",")
-        #print(data)
-        if np.int32((np.int32(data[1])/(15.0/4.0))-1)<0:
-            region_1=0
+        line=line.split(" ")
+        time=float(line[0])
+        pos_single=[float(line[1]),float(line[2])]
+        seg_single=[float(line[3]),float(line[4]),float(line[5]),float(line[6])]
+        state_single=""
+        raw_state=line[7][:-1]
+        if raw_state=="moving" or raw_state=="swimming":
+            state_single="moving"
+        elif raw_state=="none":
+            state_single="none"
         else:
-            region_1=np.int32((np.int32(data[1])/(15.0/4.0))-1)
-        if np.int32((np.int32(data[0])/(12.0/5.0))-1)<0:
-            region_3=0
-        else:
-            region_3=np.int32((np.int32(data[0])/(12.0/5.0))-1)
-        pos_single=[region_1,np.int32((np.int32(data[3])/(15.0/4.0))+1),region_3,np.int32((np.int32(data[2])/(12.0/5.0))+1)]
+            state_single="non-moving"
+        raw_state=line[7][:-1]
+        state_single_list=[state_single,raw_state]
+        timestamp.append(time)
         pos.append(pos_single)
-    return pos
+        seg.append(seg_single)
+        state.append(state_single_list)
+    return timestamp,pos,seg,state
 
 def read_yolo_label(file_path, W=500, H=400,bias=9):
     ''' Read one txt file in yolo format.
@@ -210,213 +215,150 @@ def generate_moving_BBox(human,states,label):
         merge_label.append(label_new_single)
     merge_label.sort(key=lambda x: np.int32(x[0]))
     localize=[]
-    print(human)
-    print(states)
-    print(label)
-    print(merge_label)
-    print(" ")
+    #print(human)
+    #print(states)
+    #print(label)
+    #print(merge_label)
+    #print(" ")
     return merge_label
 
-def read_moving(obj_dir,data_obj):
-    print(obj_dir)
-    count=0
-    scenarios=os.listdir(obj_dir)
-    loc_all=[]
-    for scenario in scenarios:
-        if scenario[0]==".":
+def read_trace(dir):
+    files=os.listdir(dir)
+    remove_list=[]
+    trace_dict={}
+    for file in files:
+        file_split=file.split('_')
+        if file[0]==".":
             continue
-        obj_dir_s=obj_dir+scenario
-        data_obj_s=data_obj+scenario
-        sonars=os.listdir(obj_dir_s)
-        for sonar in sonars:
-            loc=[]
-            if sonar[0]==".":
-                continue
-            obj_dir_sonar=obj_dir_s+"/"+str(sonar)
-            data_obj_sonar=data_obj_s+"/"+str(sonar)
-            print(obj_dir_sonar)
-            files=os.listdir(obj_dir_sonar)
-            if ".DS_Store" in files:
-                files.remove(".DS_Store")
-            files.sort(key=lambda x:x[:-4].split("_")[1])    
-            for file in files:
-                obj_dir_file=obj_dir_sonar+"/"+file
-                data_obj_file=data_obj_sonar+"/"+file
-                h,s,o=read_default_label_raw(obj_dir_file)
-                #data,_,_=read_txt(data_obj_file)
-                loc_one=[]
-                for i in range(len(o)):
-                    y_polar=(o[i][0]+o[i][1])/2.0
-                    x_polar=(o[i][2]+o[i][3])/2.0
-                    y=np.sin(np.deg2rad(y_polar))*x_polar*2.0
-                    x=np.cos(np.deg2rad(y_polar))*x_polar*2.0
-                    loc_single=[h[i],s[i],y,x,file,o[i]]
-                    loc_one.append(loc_single)
-                    count+=1
-                loc.append(loc_one)
-            #for i in range(len(loc)):
-            #    print(loc[i])
-            #print(" ")
-            loc_all.append(loc)
-    return loc_all,count
+        if file[:-4] in remove_list:
+            continue
+        #print(file)
+        file_trace_single=dir+"/"+file
+        timestamp,pos,seg,state=read_trace_single(file_trace_single)
+        key=file[:-4]
+        trace_dict.update({key:[timestamp,pos,seg,state]})
+    return trace_dict
+
+def merge_trace_dict(dir,save_dir):
+    files=os.listdir(dir)
+    scenario={}
+    for file in files:
+        file_split=file.split('_')
+        if file_split[0] not in scenario:
+            scenario.update({file_split[0]:{0.0:[]}})
     
-def generate_BBox(human,states,label,obj):
-    merge_label=[]
-    for i in range(len(obj)):
-        iou_max=0.0
-        label_choose=-1
-        for j in range(len(label)):
-            iou_temp=calculate_iou(obj[i],label[j])
-            if iou_max<iou_temp:
-                iou_max=iou_temp
-                label_choose=j
-        if label_choose!=-1:
-            #label_new_single=[human[label_choose],states[labeSl_choose],label[label_choose][0],label[label_choose][1],label[label_choose][2],label[label_choose][3]]
-            #print(label_new_single)
-            label_y=(label[label_choose][0]+label[label_choose][1])/2.0
-            label_x=(label[label_choose][1]+label[label_choose][2])/2.0
-            x=np.cos(np.deg2rad(label_y))*label_x*2.0
-            y=np.sin(np.deg2rad(label_y))*label_x*2.0
-            label_new_single=[human[label_choose],states[label_choose],label_y,label_x,y,x]
-            merge_label.append(label_new_single)
-    merge_label.sort(key=lambda x: np.int32(x[0]))
-    localize=[]
-    return merge_label
-
-def motion_detection(label,data_obj):
-    human_list=[]
-    for i in range(len(label)):
-        for j in range(len(label[i])):
-            if label[i][j][0] not in human_list:
-                human_list.append(label[i][j][0])
-    human_list.sort(key=lambda x:x)
-
-    dict_loc={}
-    for i in range(len(human_list)):
-        dict_loc.update({human_list[i]:[]})
-    time=2.5
-    for i in range(len(label)):
-        for j in range(len(label[i])):
-            #print(label[i][j])
-            dict_loc[label[i][j][0]].append([np.float32(label[i][j][2]),np.float32(label[i][j][3]),np.float32(time*i),label[i][j][4],label[i][j][5],label[i][j][0]])
-    return dict_loc
-    
-def obtain_local_loc_center(label):
-    x_loc=0.0
-    y_loc=0.0
-    number=0
-    for i in range(len(label)):
-        x_loc+=label[i][0]
-        y_loc+=label[i][1]
-
-def local_replish(label):
-    length=len(label)
-    #print(" ")
-    #print(label)
-    label.sort(key=lambda x:x[2])
-    for i in range(1,length):
-        if np.float32(label[i][2])-np.float32(label[i-1][2])>3:
-            number=np.int32((label[i][2]-label[i-1][2])/2.5)
-            #print(number)
-            for j in range(1,number):
-                x_add=label[i][1]*j/number+label[i-1][1]*(number-j)/number
-                y_add=label[i][0]*j/number+label[i-1][0]*(number-j)/number
-                data_single=[y_add,x_add,label[i-1][2]+2.5*j,label[i-1][3],label[i-1][4]]
-                label.append(data_single)
-    #print(" ")
-    #print(label)
-    return label
-
-def moving_center_dis(move):
+def moving_center_dis_trace(move_list):
     x_c=0
     y_c=0
-    for i in range(len(move)):
-        x_c+=move[i][1]
-        y_c+=move[i][0]
-    x_c/=len(move)
-    y_c/=len(move)
-    #print(y_c,x_c)
-    dis=np.sqrt((move[-1][0]-y_c)**2+(move[-1][1]-x_c)**2)
-    dis_count=np.sqrt((move[-1][0]-move[0][0])**2+(move[-1][1]-move[0][1])**2)
+    for i in range(len(move_list)):
+        x_c+=move_list[i][1][0]
+        y_c+=move_list[i][1][1]
+    #print(x_c,y_c)
+    x_c/=len(move_list)
+    y_c/=len(move_list)
+    #print(move_list[-1][1][0],move_list[-1][1][1])
+    dis_all=0.0
+    for i in range(len(move_list)):
+        #print(np.sqrt((move_list[i][1][0]-x_c)**2+(move_list[i][1][1]-y_c)**2)*100)
+        dis_all+=np.sqrt((move_list[i][1][0]-x_c)**2+(move_list[i][1][1]-y_c)**2)*100
+    dis=dis_all/len(move_list)
+    #print(dis)
+    dis=np.sqrt((move_list[-1][1][0]-x_c)**2+(move_list[-1][1][1]-y_c)**2)*100
+    #print(dis)
+    dis_count=np.sqrt((move_list[-1][1][0]-move_list[-2][1][0])**2+(move_list[-1][1][1]-move_list[-2][1][1])**2)*100
+    #print(dis_count)
     return dis,dis_count
     
-def motion_loc_pred(loc_dict):
-    fail_dirct=[]
-    success_dir=[]
-    time_threshold=7.5
-    start_time=0
+
+def motion_detect_trace(loc_dict,pre_config=[],dis_min=[30,30],dis_max=[60,60],IoU_max=[0.5,0.5],ratio=1.0):
+    fail_dict=[]
+    sucess_dict=[]
     count_correct=0
-    state_dic={}
-    for key in loc_dict:
-        state_dic[key]=[]
-    
-        
+    state_dict={}
     for key in loc_dict:
         moving_list=[]
-        for i in range(len(loc_dict[key])):
-            #print(loc_dict[key][i])
+        start_time=0.0
+        scenario=key.split("_")[0]
+        sonar=key.split("_")[1]
+        #print(pre_config)
+        if pre_config==[]:
+            time_single_pre=3.0
+            time_threshold=time_single_pre*5+1
+            if time_threshold==-1:
+                print("error")
+            #print(time_threshold)
+        else:
+            time_threshold=np.float32(pre_config[0])
+        #time_threshold=2*2+1
+        #print(scenario,time_threshold)
+        if key not in state_dict.keys():
+            state_dict.update({key:[]})
+        for i in range(len(loc_dict[key][0])):
+            #print(len(moving_list))
             if moving_list==[]:
-                start_time=loc_dict[key][i][2]
-                moving_list.append([loc_dict[key][i][0],loc_dict[key][i][1],loc_dict[key][i][2],loc_dict[key][i][3],loc_dict[key][i][4]])
-            elif loc_dict[key][i][2]-start_time<=time_threshold:
-                moving_list.append([loc_dict[key][i][0],loc_dict[key][i][1],loc_dict[key][i][2],loc_dict[key][i][3],loc_dict[key][i][4]])
+                start_time=loc_dict[key][0][i]
+                moving_list.append([loc_dict[key][0][i],loc_dict[key][1][i],loc_dict[key][2][i],loc_dict[key][3][i]])#timestamp,pos,seg,state
+            elif loc_dict[key][0][i]-start_time<time_threshold:
+                moving_list.append([loc_dict[key][0][i],loc_dict[key][1][i],loc_dict[key][2][i],loc_dict[key][3][i]])
             else:
-                while loc_dict[key][i][2]-start_time>time_threshold:
-                    #print(moving_list)
+                while loc_dict[key][0][i]-start_time>time_threshold:
                     if moving_list!=[]:
                         moving_list.pop(0)
                     if moving_list!=[]:
-                        start_time=moving_list[0][2]
+                        start_time=moving_list[0][0]
                     else:
-                        start_time=loc_dict[key][i][2]
+                        start_time=loc_dict[key][0][i]
                 if moving_list==[]:
-                    start_time=loc_dict[key][i][2]
-                    moving_list.append([loc_dict[key][i][0],loc_dict[key][i][1],loc_dict[key][i][2],loc_dict[key][i][3],loc_dict[key][i][4]])
+                    start_time=loc_dict[key][0][i]
+                    moving_list.append([loc_dict[key][0][i],loc_dict[key][1][i],loc_dict[key][2][i],loc_dict[key][3][i]])
                 else:
-                    moving_list.append([loc_dict[key][i][0],loc_dict[key][i][1],loc_dict[key][i][2],loc_dict[key][i][3],loc_dict[key][i][4]])
+                    moving_list.append([loc_dict[key][0][i],loc_dict[key][1][i],loc_dict[key][2][i],loc_dict[key][3][i]])
+            obj_single=[loc_dict[key][0][i],loc_dict[key][1][i],loc_dict[key][2][i],loc_dict[key][3][i]]
+            #print(obj_single)
+            #if i>1:
+                #print(moving_list[-1],moving_list[-2])
+            if i == 1:
+                dis=np.sqrt((loc_dict[key][1][i][1]-loc_dict[key][1][i-1][1])**2+(loc_dict[key][1][i][0]-loc_dict[key][1][i-1][0])**2)*100
+                iou_s=calculate_iou_on_small(loc_dict[key][2][i],moving_list[0][2])
+                iou=calculate_iou(loc_dict[key][2][i],moving_list[0][2])
+                if dis<dis_min[0]:
+                    state_dict[key].append(['non-moving',obj_single])
+                else:
+                    state_dict[key].append(['moving',obj_single])
+                continue     
             if len(moving_list)<=1:
-                fail_dirct.append(loc_dict[key][i])
-                state_dic[key].append(['non-moving',loc_dict[key][i][3]])
+                fail_dict.append(obj_single)
+                state_dict[key].append(['non-moving',obj_single])
             else:
+                iou_s=calculate_iou_on_small(loc_dict[key][2][i],moving_list[-2][2])
+                iou=calculate_iou(loc_dict[key][2][i],moving_list[-2][2])
+                dis,dis_count=moving_center_dis_trace(moving_list)
                 #print(moving_list)
-                #print(moving_list[-1][4],moving_list[-2][4])
-                iou_s=calculate_iou_on_small(loc_dict[key][i][4],moving_list[-2][4])
-                iou=calculate_iou(loc_dict[key][i][4],moving_list[-2][4])
-                #print(moving_list[-1][4],moving_list[-2][4])
-                #print(iou)
-                #moving_list=local_replish(moving_list)
-                dis,dis_count=moving_center_dis(moving_list)
-                #print(dis,dis_count)
+                #print(obj_single)
+                if len(moving_list)>6:
+                    print(len(moving_list),"error")
+                    break
+                else:
+                    #continue
+                    pass
                 if dis==0.0:
                     dis_ratio=0.0
                 else:
                     dis_ratio=dis_count/dis
-           
-                if (iou>0.5 or iou_s>0.5) and (dis<30 or dis_count<30):
-                    fail_dirct.append(loc_dict[key][i])
-                    state_dic[key].append(['non-moving',loc_dict[key][i][3]])
-                    #ßprint(dis,dis_count)
+                #print(dis_count)
+                if (iou>IoU_max[0] or iou_s>IoU_max[1]) and (dis<dis_min[0] or dis_count<dis_min[1]):
+                    fail_dict.append(obj_single)
+                    state_dict[key].append(['non-moving',obj_single])
                 else:   
-                    if dis>60 or (dis_count>60 and dis_ratio>1.0): #or (dis>10 and dis_ratio>1.0): #or dis_ratio>2:
+                    if dis>dis_max[0] or (dis_count>dis_max[1] and dis_ratio>ratio):
                         count_correct+=1
-                        success_dir.append(loc_dict[key][i])
-                        state_dic[key].append(['moving',loc_dict[key][i][3]])
-                        #print(dis,dis_count)
+                        sucess_dict.append(obj_single)
+                        state_dict[key].append(['moving',obj_single])
                     else:
-                        #print(dis,dis_count)
-                        fail_dirct.append(loc_dict[key][i])
-                        state_dic[key].append(['non-moving',loc_dict[key][i][3]])
-        for key in state_dic:
-            state_dic[key].sort(key=lambda x:np.float32(x[1][:-4].split("_")[1]))
-
-    return count_correct,fail_dirct,success_dir,state_dic
-
-    
-def read_data(path_obj,path_label):
-    h,s,obj=read_yolo_label(path_label)
-    obj_de=read_BBox_data(path_obj)
-    new_obj=generate_BBox(h,s,obj,obj_de)
-    return new_obj
+                        fail_dict.append(obj_single)
+                        state_dict[key].append(['non-moving',obj_single])
+    return count_correct,fail_dict,sucess_dict,state_dict
+                
 
 def save_results(save_path,obj_new):
     f=open(save_path,"w")
@@ -424,19 +366,215 @@ def save_results(save_path,obj_new):
         obj_single=str(obj_new[i][0])+" "+str(obj_new[i][1])+" "+str(obj_new[i][2])+" "+str(obj_new[i][3])+" "+str(obj_new[i][4])+" "+str(obj_new[i][5])+" \n"
         f.writelines(obj_single)
     f.close()
-
-def process_data(obj_dir,label_dir):
-    files=os.listdir(obj_dir)
-    files_label=os.listdir(label_dir)
-    files.sort(key=lambda x: x[:,-4].split("_")[1])
-    files_label.sort(key=lambda x: x[:,-4].split("_")[1])
-    obj_new=[]
-    for i in range(len(files)):
-        file_path=obj_dir+"/"+files[i]
-        file_path_label=label_dir+"/"+files_label[i]
-        new_obj_single=read_data(file_path,file_path_label)
-        obj_new.append(new_obj_single)
-    #print(new_obj_single)
-    return obj_new
+    
+def state_smooth(state_dict,len_win,smooth_cfg=[]):
+    for key in state_dict.keys():
+        scenario=key.split("_")[0]
+        sonar=key.split("_")[1]
+        if smooth_cfg==[]:
+            time_threshold=-1
+            time_threshold_past=-1
+            time_single=3.0
+            time_threshold=time_single*2+np.int32(time_single)-1
+            time_threshold_past=time_single*2+np.int32(time_single)-1
+            if time_threshold==-1:
+                print("error")
+        else:
+            time_threshold=np.float32(smooth_cfg[0])
+            time_threshold_past=np.float32(smooth_cfg[1])
+        #print(time_threshold,time_threshold_past)
+        for i in range(1,len(state_dict[key])): 
+            print(state_dict[key][i],i) 
+            print(" ")  
+            if len(state_dict[key])==3:
+                continue        
+            if i == 1 and len(state_dict[key])>=4:
+                if np.float32(state_dict[key][3][1][0])-np.float32(state_dict[key][1][1][0])>time_threshold:
+                    continue
+                if state_dict[key][3][0]==state_dict[key][2][0]:
+                    state_dict[key][1][0]=state_dict[key][3][0]
+                continue
+            if i==2 and len(state_dict[key])>=4:
+                if state_dict[key][2][0]!=state_dict[key][1][0]:
+                    if np.float32(state_dict[key][3][1][0])-np.float32(state_dict[key][2][1][0])>time_threshold:
+                        continue
+                    if np.float32(state_dict[key][2][1][0])-np.float32(state_dict[key][1][1][0])>time_threshold_past and state_dict[key][1][1][0]=="moving":
+                        continue
+                    else:
+                        if state_dict[key][1][0]==state_dict[key][3][0]:
+                            if len(state_dict[key])>=5:
+                                if np.float32(state_dict[key][4][1][0])-np.float32(state_dict[key][2][1][0])>time_threshold:
+                                    continue
+                                if state_dict[key][3][0]==state_dict[key][4][0]:
+                                    state_dict[key][2][0]=state_dict[key][1][0]
+                            else:
+                                state_dict[key][2][0]=state_dict[key][1][0]
+                else:
+                    continue
+                        
+            if i+int(len_win/2.0)<len(state_dict[key]):
    
-        
+                if state_dict[key][i][0]==state_dict[key][i-1][0]:
+                    continue
+                else:
+                    same_count=0
+                    diff_index=-1
+                    diff_count=0
+                    for k in range(-1*int(len_win/2.0),int(len_win/2.0)+1):
+                        if i+k<0:
+                            #print(i+k)
+                            continue
+                        #print(np.float32(state_dict[key][i][1][0])-np.float32(state_dict[key][i+k][1][0]),)
+
+                        if k<0 and np.float32(state_dict[key][i][1][0])-np.float32(state_dict[key][i+k][1][0])>time_threshold_past and state_dict[key][i][1][0]=="moving":
+                            continue
+                        if k>0 and np.float32(state_dict[key][i+k][1][0])-np.float32(state_dict[key][i][1][0])>time_threshold:
+                            #print(k,np.float32(state_dict[key][i+k][1][0]))
+                            if k==1 and state_dict[key][i-2][0]!=state_dict[key][i-3][0]:
+                                continue
+                                diff_count=0
+                                same_count=0
+                                break
+                            continue
+                        #print(k,np.float32(state_dict[key][i+k]))
+                        if (np.float32(state_dict[key][i][1][0])-np.float32(state_dict[key][i+k][1][0])<0 and k<0) or (np.float32(state_dict[key][i+k][1][0])-np.float32(state_dict[key][i][1][0])<0 and k>0):
+                            break
+                        print(k,state_dict[key][i+k])
+                        #print(" ")
+                        if state_dict[key][i+k][0]==state_dict[key][i][0]:
+                            same_count+=1
+                        else:
+                            diff_count+=1
+                            diff_index=i+k
+                    if diff_count>same_count:
+                        state_dict[key][i][0]=state_dict[key][diff_index][0]                   
+            else:
+                if state_dict[key][i][0]==state_dict[key][i-1][0]:
+                    continue
+                else:
+                    same_count=0
+                    diff_index=-1
+                    diff_count=0
+                    for k in range(-1*int(len_win/2.0),len(state_dict[key])-i):
+                        if i+k<0:
+                            #print(i+k,k)
+                            continue
+                        if k<0 and np.float32(state_dict[key][i][1][0])-np.float32(state_dict[key][i+k][1][0])>time_threshold_past and state_dict[key][i][1][0]=="moving":
+                            continue
+                        if k>0 and np.float32(state_dict[key][i+k][1][0])-np.float32(state_dict[key][i][1][0])>time_threshold:
+                            if k==1 and state_dict[key][i-2][0]!=state_dict[key][i-3][0]:
+                                continue
+                                diff_count=0
+                                same_count=0
+                                break
+                            continue
+                        #print(k)
+                        print(k,state_dict[key][i+k])
+                        
+                        if state_dict[key][i+k][0]==state_dict[key][i][0]:
+                            same_count+=1
+                        else:
+                            diff_count+=1
+                            diff_index=i+k
+                    if diff_count>same_count:
+                        state_dict[key][i][0]=state_dict[key][diff_index][0]
+    return state_dict
+
+def statistic_data(state_dict):
+    correct_num={}
+    correct_pos={}
+    count_correct=0
+    wrong_num={}
+    wrong_pos={}
+    count_wrong=0
+    for key in state_dict.keys():
+        correct_num.update({key:0})
+        wrong_num.update({key:0})
+        correct_pos.update({key:[]})
+        wrong_pos.update({key:[]})
+        for i in range(len(state_dict[key])):
+            if state_dict[key][i][0]==state_dict[key][i][1][3]:
+                count_correct+=1
+                correct_num[key]+=1
+                correct_pos[key].append(state_dict[key][i][1])
+            else:
+                count_wrong+=1
+                wrong_num[key]+=1
+                wrong_pos[key].append(state_dict[key][i][1])
+    return correct_num,correct_pos,count_correct,wrong_num,wrong_pos,count_wrong
+
+def read_data_trace(data_dir,print_flag=False,pre_config=[],smooth_cfg=[],dis_min=[30,30],dis_max=[60,60],IoU_max=[0.5,0.5],ratio=1.0):
+    data_dict=read_trace(data_dir)
+    count_correct,fail_dict,sucess_dict,state_dict=motion_detect_trace(data_dict,pre_config,dis_min=dis_min,dis_max=dis_max,IoU_max=IoU_max,ratio=ratio)
+
+
+    state_dict_filter=state_smooth(state_dict,5,smooth_cfg)
+    #state_dict_filter=state_dict
+    correct_num,correct_pos,count_correct_num,wrong_num,wrong_pos,count_wrong_num=statistic_data(state_dict_filter)
+    correct=0
+    count_mov=0
+    correct_mov=0
+    count=0
+    count_no=0
+    correct_no=0
+    appear_dict=[]
+    for key in state_dict.keys():
+        for i in range(len(state_dict[key])):
+            if state_dict[key][i][1][0]==0.0 or state_dict[key][i][1][3][0]=="none":
+                continue
+            else:
+                if state_dict[key][i][1][2] not in appear_dict:
+                    count+=1
+                    if state_dict[key][i][0]==state_dict[key][i][1][3][0]:
+                        correct+=1
+                        if state_dict[key][i][1][3][0]=="moving":
+                            correct_mov+=1
+                        else:
+                            correct_no+=1
+                    
+                    if state_dict[key][i][1][3][0]=="moving":
+                        count_mov+=1
+                    else:
+                        count_no+=1
+                    appear_dict.append(state_dict[key][i][1][2])
+    #print(correct,count,correct*1.0/count)
+    #print(correct_mov,count_mov,correct_mov*1.0/count_mov)
+    #print(correct_no,count_no,correct_no*1.0/count_no)
+    return state_dict
+    
+def save_moving_detection_result(state_dict, save_dir):
+    dir_create(save_dir)
+    for key in state_dict:
+        file=key+".txt"
+        save_file=save_dir+"/"+file
+        f=open(save_file,'w')
+        for i in range(len(state_dict[key])):
+            record=str(state_dict[key][i][0])+" "+str(state_dict[key][i][1][0])+" "+str(state_dict[key][i][1][3][0])+" "+str(state_dict[key][i][1][3][1])+" "+str(state_dict[key][i][1][2][0])+" "+str(state_dict[key][i][1][2][1])+" "+str(state_dict[key][i][1][2][2])+" "+str(state_dict[key][i][1][2][3])+"\n"
+            f.writelines(record)
+        f.close()
+    
+def main():
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--data", type=str, required=True, help="data_path")
+    parser.add_argument("--save", type=str, required=True, help="save_path")
+    parser.add_argument("--save_dir_all", type=str, required=True, help="save_dir")
+    parser.add_argument("--pre_cfg", type=float, nargs="+",required=True, help="pre_cfg")
+    parser.add_argument("--smooth_cfg", type=float, nargs="+",required=True, help="smooth_cfg")
+    args = parser.parse_args()
+    save_dir_all=args.save_dir_all
+    data_path=save_dir_all+"/"+args.data
+    save_path=save_dir_all+"/"+args.save
+    if args.pre_cfg==[0.0]:
+        pre_cfg=[]
+    else:
+        pre_cfg=args.pre_cfg
+    if args.smooth_cfg==[0.0]:
+        smooth_cfg=[]
+    else:
+        smooth_cfg=args.smooth_cfg
+    state_dict=read_data_trace(data_path,False,pre_cfg,smooth_cfg)
+    save_moving_detection_result(state_dict,save_path)
+    print("finish")
+    
+if __name__=="__main__":
+    main()
