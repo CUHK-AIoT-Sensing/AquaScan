@@ -986,10 +986,10 @@ def eval_all(har_dir,save_dir,cfg_har=[]):
         sonar=file.split("_")[1]
         if cfg_har==['0.0']:
             time_thre=-1
-            time_single=3.0 #config, time for re_smooth of first activty.
+            time_single=3.0 #config, time_thre for re_smooth of first activty, time_single is useless now, you can set it as 0
             time_thre=time_single*2+np.int32(time_single)-1
         else:
-            time_single=3.0
+            time_single=3.0 #config, time_thre for re_smooth of first activty, time_single is useless now, you can set it as 0
             time_thre=np.float32(cfg_har[0])
             
         check_fre=np.int32(30.0/time_single)+1
