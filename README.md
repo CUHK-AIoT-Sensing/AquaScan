@@ -1,6 +1,6 @@
 # Mobicom2025: AquaScan: A Sonar-based Underwater Sensing System for Human Activity Monitoring
 
-## This repo contains the code, deployment instructions, Experiment instructions, and detail usage of each function, if you find our repo is useful, pleaase cite our paper.
+## This repo contains the code, deployment instructions, Experiment instructions, and detail usage of each function. if you find our repo is useful, pleaase cite our paper.
 
 ## Contact information
 If you have any questions, please contact the author through the email: 1155161507@link.cuhk.edu.hk (CUHK E-mail). 626201515@qq.com (Personal E-mail).
