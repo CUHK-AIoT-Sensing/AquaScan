@@ -822,7 +822,7 @@ class state_transfer:
         self.dronwing_mark={
             "Motion":['S','M'],
             "Location":['U','C'],
-            "Frequency":['S','F'],
+            "Frequency":['S','F'], #here 'S' is the 'P', S is low motion change frequency, meaning motion is prolonged.
             #"Velocity":['F','S'],
             "Duration":['S','L']
         }
