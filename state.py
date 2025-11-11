@@ -834,8 +834,8 @@ class state_transfer:
     def update_cur_state(self,state):
         self.cur_state=state
         
-    def transfer_state_mark(self,simulator=False, action=None):
-        if simulator:
+    def transfer_state_mark(self,out_input=False, action=None):
+        if out_input:
             state_new=action
         else:
             state_new=[self.check_motion_state,self.check_location_changed,self.check_frequency_switch,self.check_state_duration]
@@ -1017,7 +1017,7 @@ def eval_all(har_dir,save_dir,cfg_har=[]):
             state_dur=state_transfer_re.check_state_duration()
             state_detect_list=[detect_one[0],detect_one[1],state_fre,state_dur]
 
-            state_final=state_transfer_re.transfer_state_mark(simulator=True,action=state_detect_list)
+            state_final=state_transfer_re.transfer_state_mark(out_input=True,action=state_detect_list)
             detect_re.append(state_final)
             state_score.update_state(state_final)  
             state_transfer_re.update_cur_state(state_final) 
@@ -1029,7 +1029,7 @@ def eval_all(har_dir,save_dir,cfg_har=[]):
             state_fre_gt=state_transfer_re_gt.check_frequency_switch()
             state_dur_gt=state_transfer_re_gt.check_state_duration()
             state_detect_list_gt=[GT_one[0],GT_one[1],state_fre_gt,state_dur_gt]
-            state_final=state_transfer_re_gt.transfer_state_mark(simulator=True,action=state_detect_list_gt)
+            state_final=state_transfer_re_gt.transfer_state_mark(out_input=True,action=state_detect_list_gt)
             detect_gt.append(state_final)
             state_score_gt.update_state(state_final)  
             state_transfer_re_gt.update_cur_state(state_final) 
