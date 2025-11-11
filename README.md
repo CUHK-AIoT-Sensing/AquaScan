@@ -55,9 +55,9 @@ We have three codes:
 * pre_sonar.py: denoise sonar images and detect objects on the sonar image.
 * pre_sonar_opt: optimize the dynamic object detection with binary search. This function is suitable for shallow pools and noisy environments.
 
-Denoising and object detection contains both static noise remove(remove noise caused by poolsides and wall reflection which may be localized outside the wall).
+Denoising and object detection contain both static noise removal (removing noise caused by poolsides and wall reflection, which may be localized outside the wall).
 
-Before using the function for your collected data, you should configure the data_remove and remove_line in the pre_sonar(_opt_yoho). Data_remove means removing the areas of the background signals. Remove_line means removing the swimming lanes.
+Before using the function for your collected data, you should configure the data_remove and remove_line in the pre_sonar(_opt). Data_remove means removing the areas of the background signals. Remove_line means removing the swimming lanes.
 
 #### Usage Guide
 #### Parameters of pre_sonar_opt.py
