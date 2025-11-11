@@ -1092,7 +1092,7 @@ def compare_swimming(gt_dir,detect_dir,time_single,target,target_file=[],type_la
             if np.float128(time_one)>time_sample:
                 continue
             if [detect_label[i][0],detect_label[i][1],detect_label[i][2]] not in appear_moving:
-                if time_one==0.0 or time_one=="0.0":
+                if time_one==0.0 or time_one=="0.0": #not record the first moving results since we cannot recognize the first moving activity, it is only the start point of swimming, you can recognize both swimming and non-swimming.
                     continue
                 if max_index!=-1:
                     gt_sort.append(gt_single[max_index][1])
@@ -1188,14 +1188,14 @@ def compare_metirc(gt_dir,detect_dir,moving_dir,time_single=2.57,target=[],targe
                 max_index=j
         if np.float128(detect_label[i][0])>=sampel_time:
             continue
-        if gt_single[max_index][1]=="moving":
+        if gt_single[max_index][1]=="moving": #not compare moving now, moving will be compared in compare_swimming.
             continue
-        if [detect_label[i][0],detect_label[i][1],detect_label[i][2]] not in appear_detect:
+        if [detect_label[i][0],detect_label[i][1],detect_label[i][2]] not in appear_detect: #not repeatedly record results.
             if max_index!=-1:
                 gt_sort.append(gt_single[max_index][1])
                 detect_sort.append(detect_label[i][1])
             else:
-                gt_sort.append("none")
+                gt_sort.append("none")   # None is not shown in final results.
                 detect_sort.append(detect_label[i][1])
             match_list.append([detect_label[i],gt_single[max_index]])
             appear_detect.append([detect_label[i][0],detect_label[i][1],detect_label[i][2]])
