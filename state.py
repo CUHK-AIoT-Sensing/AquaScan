@@ -1283,7 +1283,7 @@ if __name__=='__main__':
     label_gt_dir=args.label
     label_type=args.label_type
     dis_=args.dis
-    # arg.trans is disabled, you can use it to control. the gt config
+    # arg.trans is disabled, you can use it to control the gt config
     
     har_cfg=[args.har_cfg]
     smooth_cfg=[args.smooth_cfg]
