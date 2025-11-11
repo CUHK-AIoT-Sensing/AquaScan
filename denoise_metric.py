@@ -213,15 +213,12 @@ def compare_results(detect_path,label_path,yolo=False,eval_format=False):
         wrong_num+=wrong_re
         frame_num+=1
         obj_num+=len(label_obj)
-        for j in range(len(miss_re)):
+        for j in range(len(miss_re)): # here we recognize all the subject has only one box. But in state recognition, the ones split from the same subject will share the same GT label.
             if miss_re[j]==1:
                 miss_num+=1
             else:
                 IoU.append(correct_re[j])
                 IoU_label.append(corr_label[j])
-        #print(miss_num)
-        #print(wrong_num)
-        #print(" ")
     if obj_num!=0:
         miss_rate=miss_num/obj_num*1.0
         wrong_aver=wrong_num/frame_num*1.0
@@ -238,7 +235,6 @@ def compare_results(detect_path,label_path,yolo=False,eval_format=False):
     precision=detected_obj/(detected_obj+wrong_num)
     recall=detected_obj/(detected_obj+miss_num)
     F_score=2*precision*recall/(precision+recall)
-    F_score
     IoU_aver=np.mean(np.array(IoU))
     IoU_var=np.var(np.array(IoU))
     print("number total:")

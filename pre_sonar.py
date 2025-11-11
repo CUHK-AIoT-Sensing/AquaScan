@@ -486,7 +486,9 @@ def process_one_pic(sonar_data, save_path,eps=[15,15,15],min_sample=[25,25,25],b
         denoised_object_poses = localize_one_pic(sonar_data,save_data_single, **denoise_configs['denoise2'])
         if K_size>=blur_size[3]: 
             break
+            
     '''
+    #above is another implementaion , it is also works
     
     #print(sonar_data.shape,"111")
     K_size=blur_size[2]
@@ -811,7 +813,7 @@ def image_shift(data, bias):
         new_data[(i+bias)%400,:]=data[i,:]
     return new_data
 
-def label_shift(obj_single,bias):
+def label_shift(obj_single,bias): #for those images caused by hardware errors
     print(obj_single)
     for i in range(len(obj_single)):
         obj_single[i][0]+=bias
@@ -823,7 +825,7 @@ def save_process_data(data,data_path,image_path,image_save=False):
     if image_save:
         cv2.imwrite(image_path,data)
         
-def read_data_process(dirc,dirc_label,save_process_npy,save_img,save_label,label_scenario):
+def read_data_process(dirc,dirc_label,save_process_npy,save_img,save_label,label_scenario): #for those images caused by hardware errors
     scenario=os.listdir(dirc_label)
     dir_create(save_process_npy)
     dir_create(save_img)
@@ -899,8 +901,6 @@ def read_data_path(dirc,save_path,preprocess_flag=0,para_scale=[],para_polar=[50
             if ".DS_Store" in files:
                 files.remove(".DS_Store")
             files.sort(key=lambda x:np.int32(x.split('_')[1][:-4]))
-            if sonar=="sonar11":
-                continue
             for file in files:
                 print(file)
                 data_detection_result=save_path_single+"/txt/"

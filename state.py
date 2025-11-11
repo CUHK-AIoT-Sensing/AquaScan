@@ -464,7 +464,7 @@ def motion_state_smooth(real_state,timestamp,time_thre,len_win=5):
                             #print(k)
                             if i+k<0:
                                 continue
-                            if k>0 and timestamp[i+k]-timestamp[i]>=time_thre:
+                            if k>0 and np.abs(timestamp[i+k]-timestamp[i])>=time_thre:
                                 if k==1 and real_state[i-2]!=real_state[i-3]:
                                     diff_count=0
                                     same_count=0
@@ -493,7 +493,7 @@ def motion_state_smooth(real_state,timestamp,time_thre,len_win=5):
                     if i+k<0:
                         #print(i+k,k,"skip")
                         continue
-                    if k>0 and timestamp[i+k]-timestamp[i]>=time_thre and i>2:
+                    if k>0 and np.abs(timestamp[i+k]-timestamp[i])>=time_thre and i>2:
                         if k==1 and real_state[i-2]!=real_state[i-3]:
                             diff_count=0
                             same_count=0
@@ -822,7 +822,7 @@ class state_transfer:
         self.dronwing_mark={
             "Motion":['S','M'],
             "Location":['U','C'],
-            "Frequency":['S','F'],
+            "Frequency":['S','F'], #here 'S' is the 'P', S is low motion change frequency, meaning motion is prolonged.
             #"Velocity":['F','S'],
             "Duration":['S','L']
         }
@@ -834,8 +834,8 @@ class state_transfer:
     def update_cur_state(self,state):
         self.cur_state=state
         
-    def transfer_state_mark(self,simulator=False, action=None):
-        if simulator:
+    def transfer_state_mark(self,out_input=False, action=None):
+        if out_input:
             state_new=action
         else:
             state_new=[self.check_motion_state,self.check_location_changed,self.check_frequency_switch,self.check_state_duration]
@@ -1017,7 +1017,8 @@ def eval_all(har_dir,save_dir,cfg_har=[]):
             state_dur=state_transfer_re.check_state_duration()
             state_detect_list=[detect_one[0],detect_one[1],state_fre,state_dur]
 
-            state_final=state_transfer_re.transfer_state_mark(simulator=True,action=state_detect_list)
+            state_final=state_transfer_re.transfer_state_mark(out_input=True,action=state_detect_list)
+            # we use out_input since we generate motion and moving mark during read_har_file. 
             detect_re.append(state_final)
             state_score.update_state(state_final)  
             state_transfer_re.update_cur_state(state_final) 
@@ -1029,7 +1030,7 @@ def eval_all(har_dir,save_dir,cfg_har=[]):
             state_fre_gt=state_transfer_re_gt.check_frequency_switch()
             state_dur_gt=state_transfer_re_gt.check_state_duration()
             state_detect_list_gt=[GT_one[0],GT_one[1],state_fre_gt,state_dur_gt]
-            state_final=state_transfer_re_gt.transfer_state_mark(simulator=True,action=state_detect_list_gt)
+            state_final=state_transfer_re_gt.transfer_state_mark(out_input=True,action=state_detect_list_gt)
             detect_gt.append(state_final)
             state_score_gt.update_state(state_final)  
             state_transfer_re_gt.update_cur_state(state_final) 
@@ -1092,7 +1093,7 @@ def compare_swimming(gt_dir,detect_dir,time_single,target,target_file=[],type_la
             if np.float128(time_one)>time_sample:
                 continue
             if [detect_label[i][0],detect_label[i][1],detect_label[i][2]] not in appear_moving:
-                if time_one==0.0 or time_one=="0.0":
+                if time_one==0.0 or time_one=="0.0": #not record the first moving results since we cannot recognize the first moving activity, it is only the start point of swimming, you can recognize both swimming and non-swimming.
                     continue
                 if max_index!=-1:
                     gt_sort.append(gt_single[max_index][1])
@@ -1188,14 +1189,14 @@ def compare_metirc(gt_dir,detect_dir,moving_dir,time_single=2.57,target=[],targe
                 max_index=j
         if np.float128(detect_label[i][0])>=sampel_time:
             continue
-        if gt_single[max_index][1]=="moving":
+        if gt_single[max_index][1]=="moving": #not compare moving now, moving will be compared in compare_swimming.
             continue
-        if [detect_label[i][0],detect_label[i][1],detect_label[i][2]] not in appear_detect:
+        if [detect_label[i][0],detect_label[i][1],detect_label[i][2]] not in appear_detect: #not repeatedly record results.
             if max_index!=-1:
                 gt_sort.append(gt_single[max_index][1])
                 detect_sort.append(detect_label[i][1])
             else:
-                gt_sort.append("none")
+                gt_sort.append("none")   # None is not shown in final results.
                 detect_sort.append(detect_label[i][1])
             match_list.append([detect_label[i],gt_single[max_index]])
             appear_detect.append([detect_label[i][0],detect_label[i][1],detect_label[i][2]])

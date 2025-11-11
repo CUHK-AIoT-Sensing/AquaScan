@@ -5,20 +5,6 @@ image_reconstruction is a Python program for reconstructing the "skip-scan" imag
 ```bash
 image_reconstruction/
 ├── reconstruction.py
-├── recover
-│   ├── img
-│   └── txt
-├── raw_data
-│   ├── 2292002
-│   ├── 2292004
-│   ├── 2292005
-│   ├── 08071005
-│   ├── 08140001 #background data
-│   ├── 08141002
-│   ├── 08213000 #background data
-│   ├── 08213003
-│   ├── 08213004
-│   └── 08213005
 ├── README.md
 ├── prepare.sh
 └── remove_recover.sh

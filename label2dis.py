@@ -55,7 +55,7 @@ def read_txt(path, angle_range=400,bias=0):
                     sonar_data[int(angle)] = data
     return sonar_data, int(start_angle), int(end_angle)
 
-def read_txt_hfc(path,angle_range=400):
+def read_txt_noangle(path,angle_range=400):
     path_seg=path.split('/')[-1]
     if '_' in path_seg:
         file_name=str(path_seg.split('_')[1])

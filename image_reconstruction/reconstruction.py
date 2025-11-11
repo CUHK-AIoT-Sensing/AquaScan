@@ -641,26 +641,8 @@ def main():
                     filename = sonarpath + file
 
                     # Modify the following settings to match your sonar configuration
-                    if sonar == 'sonar4':
-                        # if int(file[0:-4]) % 2 == 0:
-                        if count % 2 == 0:
-                            data, ground_truth, info, scheme, start_angle, end_angle = read_data(filename, 2, 2, 1)
-
-                        else:
-                            if args.raw == "2292002":
-
-                                data, ground_truth, info, scheme, start_angle, end_angle = read_data(filename, 2, 0, 1)
-                            else:
-                                data, ground_truth, info, scheme, start_angle, end_angle = read_data(filename, 2, 1, 1)
-
-                    elif sonar == "sonar11":
-                        if count % 2 == 0:
-                            data, ground_truth, info, scheme, start_angle, end_angle = read_data(filename, 2, 1, 1)
-
-                        else:
-                            data, ground_truth, info, scheme, start_angle, end_angle = read_data(filename, 2, 3, 1)
-                    else:
-                        data, ground_truth, info, scheme, start_angle, end_angle = read_data(filename, args.skip, args.offset, args.scan)
+                    
+                    data, ground_truth, info, scheme, start_angle, end_angle = read_data(filename, args.skip, args.offset, args.scan)
 
                     # Iterate over all data slices
                     for i in range(len(data)):
