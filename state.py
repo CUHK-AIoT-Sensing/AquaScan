@@ -1148,6 +1148,7 @@ def overall(martix):
 
 
 def compare_metirc(gt_dir,detect_dir,moving_dir,time_single=2.57,target=[],target_file=[],dis=13.0,label_type=0,sampel_time=90,gt_config=[]):
+    #dis is useless now. 
     state=['moving','motionless','patting','struggling','drowning']
     gt_dataset,gt_dict=generate_gt_label(gt_dir,time_single,target,label_type,gt_config)
 
@@ -1282,7 +1283,7 @@ if __name__=='__main__':
     detect_dir=save_dir_all+"/"+args.detect
     label_gt_dir=args.label
     label_type=args.label_type
-    dis_=args.dis
+    dis_=args.dis #useless
     # arg.trans is disabled, you can use it to control the gt config
     
     har_cfg=[args.har_cfg]
