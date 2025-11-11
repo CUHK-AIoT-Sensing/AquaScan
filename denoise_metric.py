@@ -55,13 +55,7 @@ def cal_IoU(obj1, obj2, only_label=False):
     obj1_area=(obj1[1]-obj1[0])*(obj1[3]-obj1[2])
     obj2_area=(obj2[1]-obj2[0])*(obj2[3]-obj2[2])
     sum_area=obj1_area+obj2_area
-    if not only_label:
-        IoU=(cross)/(sum_area-cross)
-    else:
-        if obj2_area!=0:
-            IoU=cross/obj2_area
-        else:
-            IoU=0
+    IoU=(cross)/(sum_area-cross)
     return IoU
     
 def read_default_label(file_path):
@@ -225,9 +219,6 @@ def compare_results(detect_path,label_path,yolo=False,eval_format=False):
             else:
                 IoU.append(correct_re[j])
                 IoU_label.append(corr_label[j])
-        #print(miss_num)
-        #print(wrong_num)
-        #print(" ")
     if obj_num!=0:
         miss_rate=miss_num/obj_num*1.0
         wrong_aver=wrong_num/frame_num*1.0
@@ -244,7 +235,6 @@ def compare_results(detect_path,label_path,yolo=False,eval_format=False):
     precision=detected_obj/(detected_obj+wrong_num)
     recall=detected_obj/(detected_obj+miss_num)
     F_score=2*precision*recall/(precision+recall)
-    F_score
     IoU_aver=np.mean(np.array(IoU))
     IoU_var=np.var(np.array(IoU))
     print("number total:")
