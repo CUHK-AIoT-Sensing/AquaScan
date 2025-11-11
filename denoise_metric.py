@@ -182,6 +182,7 @@ def calculate_statistic(detected_obj, label_obj,detect_path):
     for k in range(len(miss_re)):
         if miss_re[k]==0:
             detect_num+=1
+    #miss_re[i] is 1: missed, 0: detected
     wrong_re=len(detected_obj)-detect_num
     #print(miss_re,correct_re,wrong_re,len(detected_obj))
     return miss_re,correct_re,wrong_re,correct_re_label
