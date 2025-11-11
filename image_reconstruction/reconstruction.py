@@ -593,10 +593,8 @@ def plot_error_bar(mse, labels, name="", save=False):
 
 
 def main():
-    # Raw data path
-    # 08071005，08141002，08213003-05，2292002，04，05
     parser = argparse.ArgumentParser(description="difference")
-    parser.add_argument("--raw", default='08213005', type=str, help="path of raw picture")
+    parser.add_argument("--raw", default='11111', type=str, help="path of raw picture")
     parser.add_argument("--save_txt", default='txt/', type=str, help="name of saving txt")
     parser.add_argument("--save_img", default='img/', type=str, help="name of saving picture")
     parser.add_argument("--skip", default= 2, type = int, help="skip angle")
