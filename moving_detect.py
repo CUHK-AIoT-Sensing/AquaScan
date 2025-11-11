@@ -566,7 +566,7 @@ def main():
     else:
         smooth_cfg=args.smooth_cfg
     state_dict=read_data_trace(data_path,False,pre_cfg,smooth_cfg)
-    save_moving_detection_result(state_dict,save_path)
+    save_moving_detection_result(state_dict,save_path) #not the final results
     print("finish")
     
 if __name__=="__main__":
