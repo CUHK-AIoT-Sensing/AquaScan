@@ -14,6 +14,8 @@ import copy
 import time
 import denoise_metric as dm
 
+#this function is designed for errors caused by hardware. Sonar may shift to wrong angles when scanning.
+
 def dir_create(dir):
     if not os.path.exists(dir):
         os.mkdir(dir)
