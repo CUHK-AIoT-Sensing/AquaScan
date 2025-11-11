@@ -355,11 +355,11 @@ def read_default_label_raw(file_path):
 
 def data_remove(data,threshold,distance):
     #define your pool setting
-    pass
+    return data
 
 def remove_line(data,threshold,distance):
-    #define your pool line
-    pass
+    #define your pool line, recommend removing the <5m areas.
+    return data
 
 def data_rescale(data,threshold,distance=[500],re_size=[1600,2000],remove_type=0,pre=False):
     if len(threshold)!=len(distance):
