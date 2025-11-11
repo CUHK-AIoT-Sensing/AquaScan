@@ -1018,6 +1018,7 @@ def eval_all(har_dir,save_dir,cfg_har=[]):
             state_detect_list=[detect_one[0],detect_one[1],state_fre,state_dur]
 
             state_final=state_transfer_re.transfer_state_mark(out_input=True,action=state_detect_list)
+            # we use out_input since we generate motion and moving mark during read_har_file. 
             detect_re.append(state_final)
             state_score.update_state(state_final)  
             state_transfer_re.update_cur_state(state_final) 
