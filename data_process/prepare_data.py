@@ -832,10 +832,6 @@ def split_dataset_prepare_data(aug_p,raw_data_path,label_path,save_path,train_sc
             continue
         if scenario[0]==".":
             continue
-        if scenario=="1.1.1.19":
-            continue
-        #if scenario!="1.1.1.7":
-        #    continue
         sonars = os.listdir(label_scenario_path)
         for sonar in sonars:
             #start_time=0  
