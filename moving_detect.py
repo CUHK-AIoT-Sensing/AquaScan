@@ -258,7 +258,7 @@ def moving_center_dis_trace(move_list):
     y_c/=len(move_list)
     dis=np.sqrt((move_list[-1][1][0]-x_c)**2+(move_list[-1][1][1]-y_c)**2)*100
     #print(dis)
-    dis_count=np.sqrt((move_list[-1][1][0]-move_list[-2][1][0])**2+(move_list[-1][1][1]-move_list[-2][1][1])**2)*100 #there is a mistake in the paper, , descrption in paper should be fixed as "the distance 𝑑 from the centroid to the swimmer’s locations.", Here our idea is to only compare the current location with the centroid, which can reflect the currecnt location change compared with the centroid and judge whether it is moving. If you calculate the mean distance, the final moving accuracy will fluctuate around 2-5% (may be higher or lower) 
+    dis_count=np.sqrt((move_list[-1][1][0]-move_list[-2][1][0])**2+(move_list[-1][1][1]-move_list[-2][1][1])**2)*100 #there is a mistake in the paper, descrption in paper should be fixed as "the distance 𝑑 from the centroid to the swimmer’s locations.", Here our idea is to only compare the current location with the centroid, which can reflect the currecnt location change compared with the centroid and judge whether it is moving. If you calculate the mean distance, the final moving accuracy will fluctuate around 2-5% (may be higher or lower) 
     #print(dis_count)
     return dis,dis_count
     
