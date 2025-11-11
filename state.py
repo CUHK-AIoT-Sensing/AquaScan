@@ -818,7 +818,7 @@ class state_transfer:
         self.duration=duration
         self.duration_ratio=duration_ratio
         self.cur_state=cur_state
-        self.check_fre=check_fre
+        self.check_fre=check_fre #useless, can delete
         self.dronwing_mark={
             "Motion":['S','M'],
             "Location":['U','C'],
