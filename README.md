@@ -186,9 +186,9 @@ generate_data_all.py is used for generating inference data
 | `--smooth_cfg` | str | Yes | smooth_cfg |
 | `--start_cfg` | str | Yes | start_cfg |
 | `--gt_cfg` | str | Yes | gt_cfg |
-| `--gt_mode` | int | Yes | gt_cfg |
+| `--gt_mode` | int | Yes | gt_mode |
 | `--gt_trans` | int | Yes | gt_trans |
-| `--gt_sc` | str (multiple values) | Yes | gt_trans |
+| `--gt_sc` | str (multiple values) | Yes | gt_sc |
 | `--dis` | int | Yes | distance |
 | `--label_type` | int | Yes | label_type |
 | `--sample` | int | Yes | sample |
