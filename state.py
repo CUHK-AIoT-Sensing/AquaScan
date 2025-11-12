@@ -1031,7 +1031,7 @@ def eval_all(har_dir,save_dir,cfg_har=[]):
             state_fre_gt=state_transfer_re_gt.check_frequency_switch()
             state_dur_gt=state_transfer_re_gt.check_state_duration()
             state_detect_list_gt=[GT_one[0],GT_one[1],state_fre_gt,state_dur_gt]
-            state_final_gt=state_transfer_re_gt.transfer_state_mark(out_input=True,action=state_detect_list_gt)
+            state_final_gt=state_transfer_re_gt.transfer_state_mark(out_input=True,action=state_detect_list_gt) #useless now, just for reference
             detect_gt.append(state_final_gt)
             state_score_gt.update_state(state_final_gt)  
             state_transfer_re_gt.update_cur_state(state_final_gt) 
