@@ -101,6 +101,8 @@ Before using the function for your collected data, you should configure the data
 | `--data` | str | Yes | data_path |
 | `--label` | str | Yes | label_path |
 
+Before using pre_sonar_bias.py, please configure the path in the file.
+
 ### tracking
 We have two codes for tracking the objects:
 * label2dis.py --generate location of subject in the sonar images
