@@ -385,6 +385,15 @@ def data_rescale(data,threshold,distance=[500],re_size=[1600,2000],remove_type=0
     if remove_type==0:
         data_new=data_remove(data_new,threshold_new,distance_new,pre)
     return data_new
+    
+def data_pre(data, threshold, distance, type, pre=False):
+    if len(threshold)!=len(distance):
+        print("unalign-bg-noise-remove")
+        return
+    print(data.shape)
+    if type==0:
+        data_new=data_remove(data,threshold,distance,pre)
+    return data_new
 
 def localize_one_pic(temp_data, save_data,save_flag=False,threshold=45, min_samples=10, eps=12, blur_size=5, min_size=25):
     """
