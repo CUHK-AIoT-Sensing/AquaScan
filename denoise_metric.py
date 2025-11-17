@@ -55,7 +55,7 @@ def cal_IoU(obj1, obj2, only_label=False):
     obj1_area=(obj1[1]-obj1[0])*(obj1[3]-obj1[2])
     obj2_area=(obj2[1]-obj2[0])*(obj2[3]-obj2[2])
     sum_area=obj1_area+obj2_area
-    IoU=(cross)/(sum_area-cross)
+    IoU=(cross)/(sum_area-cross) #sum areas - cross = Union， cross=intersection
     return IoU
     
 def read_default_label(file_path):
