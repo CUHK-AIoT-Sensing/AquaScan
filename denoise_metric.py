@@ -25,7 +25,7 @@ def read_rescale_results(file_path):
             xmax = int(float(arr[5])) #5
             ymax = int(float(arr[3])) #3
             
-            obj = [ymin, ymax, xmin, xmax]
+            obj = [ymin, ymax, xmin, xmax] #label stored before is ymin, ymax, xmin, xmax
             objs.append(obj)
     return human_ids,states,objs
     
@@ -40,7 +40,7 @@ def read_result(file_path):
             x_max=max(np.float32(data[0]),np.float32(data[2]))
             y_min=min(np.float32(data[1]),np.float32(data[3]))
             y_max=max(np.float32(data[1]),np.float32(data[3]))
-            obj=[y_min,y_max,x_min,x_max]
+            obj=[y_min,y_max,x_min,x_max] #obj stored before is xmin, ymin, xmax, ymax
             objs.append(obj)
     #objs=list(set(objs))
     return objs
