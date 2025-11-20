@@ -252,7 +252,7 @@ def motion_mark_generate(motion):
     else:
         return 'M'
 
-def re_smooth_start(motion_flag_list,motion_flag_list_old,moving_flag_list,timestamp,time_thre,path):
+def re_smooth_start(motion_flag_list,motion_flag_list_old,moving_flag_list,timestamp,time_thre,path): # resmooth the first 2 states when their following state changes. This design is due to lack of past information. To reduce the overhead, we have a strict re-smooth conditions to not easily trigger it. In most of cases, this will not be triggered so the latency of first 2 states will not increase.
     if len(motion_flag_list)<3:
         return motion_flag_list
     if (motion_flag_list[1]!=motion_flag_list_old[1] or motion_flag_list[2]!=motion_flag_list_old[2]) and timestamp[2]-timestamp[0]<=time_thre and motion_flag_list[0]!=motion_flag_list[1] and moving_flag_list[2]!="C" and moving_flag_list[1]!="C":
@@ -419,7 +419,7 @@ def read_state_list(path):
     label=np.array(label)
     return state,real,label
 
-def motion_state_smooth(real_state,timestamp,time_thre,len_win=5):
+def motion_state_smooth(real_state,timestamp,time_thre,len_win=5): #a sliding window in a threshold, the main reason why latency is high.
     #print(time_thre)
     
     for i in range(len(real_state)):
