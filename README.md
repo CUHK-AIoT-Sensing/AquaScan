@@ -108,6 +108,8 @@ We have two codes for tracking the objects:
 * label2dis.py --generate location of subject in the sonar images
 * track.py --generate tracjectory of subjects
 
+Before using label2dis.py  and track.py please set the configuration in each methods.
+
 #### Usage Guide
 #### Parameters of label2dis.py
 | Argument Name | Argument Type | Required | Help Information |
@@ -118,7 +120,7 @@ We have two codes for tracking the objects:
 | `--type` | int | Yes | data_type |
 | `--remove` | int | Yes | data_type |
 | `--dis` | int | Yes | dis |
-| `--parad` | int (multiple values) | Yes | parad |
+| `--parad` | int (multiple values) | Yes | parad , the same with pre_sonar.py |
 | `--save_dir_all` | str | Yes | label_path |
 
 #### Parameters of track.py
@@ -128,11 +130,13 @@ We have two codes for tracking the objects:
 | `--label` | str | Yes | label_path |
 | `--track` | str | Yes | tracking |
 | `--track_re` | str | Yes | track_results |
-| `--cfg` | int (multiple values) | Yes | cfg |
+| `--cfg` | int (multiple values) | Yes | track threshold setting |
 | `--save_dir_all` | str | Yes | save_dir |
 
 ### Moving detection
 Moving_detect.py is used for movement detection. 
+
+Before using moving_detect.py, please make sure that threshold is set.
 
 #### Usage Guide
 #### Parameters of Moving_detect.py
@@ -141,8 +145,8 @@ Moving_detect.py is used for movement detection.
 | `--data` | str | Yes | data_path |
 | `--save` | str | Yes | save_path |
 | `--save_dir_all` | str | Yes | save_dir |
-| `--pre_cfg` | float (multiple values) | Yes | pre_cfg |
-| `--smooth_cfg` | float (multiple values) | Yes | smooth_cfg |
+| `--pre_cfg` | float (multiple values) | Yes | pre_cfg, the time window use for moving trace calcualtion. |
+| `--smooth_cfg` | float (multiple values) | Yes | smooth_cfg, the time window use for smooth results. |
 
 ### Generate inference data for motion detection
 generate_data_all.py is used for generating inference data
@@ -160,7 +164,9 @@ generate_data_all.py is used for generating inference data
 ### Recognizing activities through a state-transfer-machine
 * infe_state.py: motion detection.
 * split_results.py: record the motion detection results in separate files.
-* state.py: recognize activities. 
+* state.py: recognize activities.
+
+Before using state.py, please make sure the threshold is set.
 
 #### Usage Guide
 #### Parameters of infe_state.py & train.py
@@ -184,9 +190,9 @@ generate_data_all.py is used for generating inference data
 | `--har` | str | Yes | har |
 | `--detect` | str | Yes | detect |
 | `--label` | str | Yes | detect |
-| `--har_cfg` | str | Yes | har_cfg |
-| `--smooth_cfg` | str | Yes | smooth_cfg |
-| `--start_cfg` | str | Yes | start_cfg |
+| `--har_cfg` | str | Yes | har_cfg, use for constraint of re-smoothing the first 2 states |
+| `--smooth_cfg` | str | Yes | smooth_cfg, use for motion state smoothing. |
+| `--start_cfg` | str | Yes | start_cfg, use for record the timestamp. |
 | `--gt_cfg` | str | Yes | gt_cfg |
 | `--gt_mode` | int | Yes | gt_mode |
 | `--gt_trans` | int | Yes | gt_trans |
