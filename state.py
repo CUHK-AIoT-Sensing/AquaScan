@@ -556,7 +556,7 @@ class swimmer_state:
         self.location.append(location)
         self.timestamp.append(timestamp)
         
-    def state_smooth(self,windows,step):
+    def state_smooth(self,windows,step): #useless methods, please drop it.
         motion_filter=[]
         re_motion=np.array(self.motion)
         for i in range(0,len(self.motion),step):
