@@ -464,8 +464,8 @@ def motion_state_smooth(real_state,timestamp,time_thre,len_win=5): #a sliding wi
                             #print(k)
                             if i+k<0:
                                 continue
-                            if k>0 and np.abs(timestamp[i+k]-timestamp[i])>=time_thre:
-                                if k==1 and real_state[i-2]!=real_state[i-3]:
+                            if k>0 and np.abs(timestamp[i+k]-timestamp[i])>=time_thre and i>2:
+                                if k==1 and real_state[i-2]!=real_state[i-3] and i>=3:
                                     diff_count=0
                                     same_count=0
                                     break
@@ -494,7 +494,7 @@ def motion_state_smooth(real_state,timestamp,time_thre,len_win=5): #a sliding wi
                         #print(i+k,k,"skip")
                         continue
                     if k>0 and np.abs(timestamp[i+k]-timestamp[i])>=time_thre and i>2:
-                        if k==1 and real_state[i-2]!=real_state[i-3]:
+                        if k==1 and real_state[i-2]!=real_state[i-3] and i>=3:
                             diff_count=0
                             same_count=0
                             break
