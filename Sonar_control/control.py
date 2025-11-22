@@ -73,7 +73,7 @@ def rescan(former_object, distance, number_sample, k, images):
     return images
 if __name__=='__main__':
     parser = argparse.ArgumentParser(description='Control the sonar')
-    parser.add_argument('--data', action="store", required=False, type=int, default=1, help="We use fake data or sonar data")
+    parser.add_argument('--data', action="store", required=False, type=int, default=1, help="We use sonar data")
     parser.add_argument('--mode', action="store", required=False, type=int, default=2, help="0-scan one sector, 1-scan one direction, 2-a   ")
     parser.add_argument('--background', action="store", required=False, type=int, default=1,help="Use background substration or close substration")
     parser.add_argument('--start', required=False, type=int, default=0,help="start angle")
