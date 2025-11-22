@@ -24,7 +24,7 @@ _firmwareMaxSamplePeriod = 40000
 speed_of_sound = 1500
 background_path = ""
 
-def cal_sample_period(dis, number_samples):
+def cal_sample_period(dis, number_samples): #you can refer the implementation of BlueRobotics Engineering https://discuss.bluerobotics.com/t/please-provide-some-answer-regards-ping360/6393/3
     return 2 * dis / (number_samples * speed_of_sound * sample_fixed_duration)
 
 
