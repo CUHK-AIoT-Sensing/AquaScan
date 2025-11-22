@@ -1,6 +1,6 @@
 # image_reconstruction
 
-image_reconstruction is a Python program for reconstructing the "skip-scan" images.
+image_reconstruction is a Python program for reconstructing the "skip-scan" images. Since our method requires the nearby pixels not the full images, our method itself can be used even if we are collecting data, which decreases the overhead greatly. Noticed that code here is to process the full images, you can try to implement a steaming version.
 
 ```bash
 image_reconstruction/
