@@ -777,7 +777,7 @@ class swimmer_state:
                     count+=1
         self.duration_ratio=count*1.0/total_count
         
-    def update(self,motion,location,timestamp):
+    def update(self,motion,location,timestamp): #useless now
         self.update_move(motion,location,timestamp)
         self.update_motion_score()
         self.update_location_score()
