@@ -1150,7 +1150,7 @@ def overall(martix):
     return correct*1.0/count_all
 
 
-def compare_metirc(gt_dir,detect_dir,moving_dir,time_single=2.57,target=[],target_file=[],dis=13.0,label_type=0,sampel_time=90,gt_config=[]):
+def compare_metirc(gt_dir,detect_dir,moving_dir,time_single=2.57,target=[],target_file=[],dis=13.0,label_type=0,sampel_time=90,gt_config=[]): #time_single is useless now
     #dis is useless now. 
     state=['moving','motionless','patting','struggling','drowning']
     gt_dataset,gt_dict=generate_gt_label(gt_dir,time_single,target,label_type,gt_config)
