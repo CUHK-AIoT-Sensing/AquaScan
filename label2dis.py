@@ -261,7 +261,7 @@ def label2pos_seg(sonar_data,detect_obj,objs_gt,states,humans,dis):
                 iou_max=iou_temp
         x,y,x_mid,y_mid,polar_pos,obj,obj_scale=generate_loc(sonar_data,detect_obj[i],dis)
         if iou_max_index!=-1:
-            pos_list.append([x,y,x_mid,y_mid,polar_pos,obj,obj_scale,states[iou_max_index],states[iou_max_index],humans[iou_max_index]]) #states[iou_max_index],states[iou_max_index],humans[iou_max_index]
+            pos_list.append([x,y,x_mid,y_mid,polar_pos,obj,obj_scale,states[iou_max_index],states[iou_max_index],humans[iou_max_index]]) #states[iou_max_index],states[iou_max_index],humans[iou_max_index] is for reference not for inference
         else:
             pos_list.append([x,y,x_mid,y_mid,polar_pos,obj,obj_scale,"none","-1"])
     return pos_list
@@ -329,7 +329,7 @@ def label2pos(label_direct,data_direct,gt_direct,save_direct,save_eval_label_dir
                     pre=False
                 sonar_data=ps.data_pre(sonar_data,data_config[0],data_config[1],remove,pre)
                 _,_,detect_obj=read_rescale_results(label_path_one,ratio=3.0)
-                humans,states,objs_gt=read_rescale_results_gt(gt_file)
+                humans,states,objs_gt=read_rescale_results_gt(gt_file) #gt here is used for reference not for inference
                 print(data_path_one)
                 pos_list=label2pos_seg(sonar_data,detect_obj,objs_gt,states,humans,dis)
                 write_pos(pos_list,save_file)
