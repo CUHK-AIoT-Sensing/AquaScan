@@ -273,7 +273,7 @@ def re_smooth_start(motion_flag_list,motion_flag_list_old,moving_flag_list,times
                 diff_count=0
                 same_count=0
                 for i in range(0,4):
-                    print("re",i)
+                    #print("re",i)
                     if motion_flag_list[i]==motion_flag_list[1]:
                         same_count+=1
                     else:
