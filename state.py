@@ -644,8 +644,8 @@ class swimmer_state:
         S_count=0
         if len(self.motion)<=self.length:
             for i in range(len(self.motion)):
-                if i == 0 and self.motion[i][1]==1:
-                    F=1
+                #if i == 0 and self.motion[i][1]==1: #the first frame can be considered or not due to lack of movement patterns
+                #    F=1
                 if self.motion[i][1]==1:
                     M_count+=1
                 else:
