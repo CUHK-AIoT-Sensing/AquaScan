@@ -108,7 +108,7 @@ We have two codes for tracking the objects:
 * label2dis.py --generate location of subject in the sonar images
 * track.py --generate tracjectory of subjects
 
-Before using label2dis.py  and track.py please set the configuration in each methods.
+Before using label2dis.py and track.py, please set the configuration in each method. The state record in label2dis.py and track.py is used for reference, not the recognized activities; you can even remove it or set it to another mark.
 
 #### Usage Guide
 #### Parameters of label2dis.py
@@ -136,7 +136,7 @@ Before using label2dis.py  and track.py please set the configuration in each met
 ### Moving detection
 Moving_detect.py is used for movement detection. 
 
-Before using moving_detect.py, please make sure that threshold is set.
+Before using moving_detect.py, please make sure that the threshold is set.
 
 #### Usage Guide
 #### Parameters of Moving_detect.py
