@@ -451,7 +451,7 @@ if __name__ == '__main__':
             fileObject.close()
             count = count + 1
 
-    else:
+    else:#now we do not use this method.
         local_time = time.strftime("%Y-%m-%d-%H-%M-%S", time.localtime())
         # file_save=open(local_time+"_"+path_save_data,"w")
         start_time = time.time()
