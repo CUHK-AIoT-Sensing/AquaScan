@@ -205,7 +205,7 @@ if __name__ == '__main__':
                 x_angle = x_angle - stop_angle - 1 + start_angle
             else:
                 p.control_transducer(
-                    0,
+                    0, #this is reserved from the ROS2 of ping360
                     p._gain_setting,
                     x_angle,
                     p._transmit_duration,
