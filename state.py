@@ -998,7 +998,7 @@ def eval_all(har_dir,save_dir,cfg_har=[]):
         check_fre_time=30.0
         read_har_single=har_dir+"/"+file
         save_path=save_dir+'/'+file
-        timestamp,moving_flag_list,moving_GT_list,motion_flag_list,motion_GT_list,seg_list=read_har_file(read_har_single,time_thre)
+        timestamp,moving_flag_list,moving_GT_list,motion_flag_list,motion_GT_list,seg_list=read_har_file(read_har_single,time_thre) # resmooth the first 2 states when their following state changes. This function works after smoothing motion and movement. This design is proposed due to lack of past information. To reduce the overhead, we have a strict re-smooth conditions to not easily trigger it. In most of cases, this will not be triggered so the latency of first 2 states will not increase.
         state_score=swimmer_state(state_list=[],length=40,time_per_frame=time_single,time_check=check_fre_time) 
         state_score_gt=swimmer_state(state_list=[],length=40,time_per_frame=time_single,time_check=check_fre_time) 
         state_detected=None
