@@ -315,7 +315,7 @@ def read_har_file(path,time_thre):
         motion_flag_list_old.append(motion_single_old)
         seg_single=[float(data[5]),float(data[6]),float(data[7]),float(data[8])]
         seg_list.append(seg_single)
-    motion_flag_list=re_smooth_start(motion_flag_list,motion_flag_list_old,moving_flag_list,timestamp,time_thre,path)
+    motion_flag_list=re_smooth_start(motion_flag_list,motion_flag_list_old,moving_flag_list,timestamp,time_thre,path) # resmooth the first 2 states when their following state changes. This function works after smoothing motion and movement. This design is proposed due to lack of past information. To reduce the overhead, we have a strict re-smooth conditions to not easily trigger it. In most of cases, this will not be triggered so the latency of first 2 states will not increase.
     for i in range(len(motion_flag_list)):
         motion_feature_single=motion_mark_generate(motion_flag_list[i])
         motion_fea_list.append(motion_feature_single)
