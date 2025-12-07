@@ -339,7 +339,8 @@ def motion_detect_trace(loc_dict,pre_config=[],dis_min=[30,30],dis_max=[60,60],I
                 else:
                     dis_ratio=dis_count/dis
                 #print(dis_count)
-                if (iou>IoU_max[0] or iou_s>IoU_max[1]) and (dis<dis_min[0] or dis_count<dis_min[1]): #there is a mistake in the paper, descrption in paper should be fixed as "and 𝐷 or 𝑑 below 𝐷_{𝑚𝑖𝑛} or 𝑑_{𝑚𝑖𝑛}". Low dis and dis_count means slight movement, which does not require to meet the requirement at the same time.
+                if (iou>IoU_max[0] or iou_s>IoU_max[1]) and (dis<dis_min[0] or dis_count<dis_min[1]):#there is a mistake in the paper, descrption in paper should be fixed as "and 𝐷 or 𝑑 below 𝐷_{𝑚𝑖𝑛} or 𝑑_{𝑚𝑖𝑛}". Low dis and dis_count means slight movement, which does not require to meet the requirement at the same time.
+                    fail_dict.append(obj_single)
                     state_dict[key].append(['non-moving',obj_single])
                 else:   
                     if dis>dis_max[0] or (dis_count>dis_max[1] and dis_ratio>ratio):
@@ -401,7 +402,9 @@ def state_smooth(state_dict,len_win,smooth_cfg=[]):
                                     state_dict[key][2][0]=state_dict[key][1][0]
                             else:
                                 state_dict[key][2][0]=state_dict[key][1][0]
-                    #i=2, if the last four states cannot be used to smooth, then the first point will be considered.
+                    #continue here should have a continue, but raw code does not, so the i=2 will be smooth as the other ones in the following loop.
+                    #another reason why there is no continue here: the first is non-moving (we cannot recognize moving at the beginning). If 1-4 is non, moving, non, moving, it seems that we should consider it as a non-moving subjects. Without continue, we can smooth this state.
+                    #Without continue here will not add more overhead here since we still use the state in the same time windows.
                 else:
                     continue
                         
@@ -423,7 +426,7 @@ def state_smooth(state_dict,len_win,smooth_cfg=[]):
                             continue
                         if k>0 and np.float32(state_dict[key][i+k][1][0])-np.float32(state_dict[key][i][1][0])>time_threshold:
                             #print(k,np.float32(state_dict[key][i+k][1][0]))
-                            if k==1 and state_dict[key][i-2][0]!=state_dict[key][i-3][0] and i>=4:
+                            if k==1 and state_dict[key][i-2][0]!=state_dict[key][i-3][0]:
                                 continue
                                 diff_count=0
                                 same_count=0
@@ -455,7 +458,7 @@ def state_smooth(state_dict,len_win,smooth_cfg=[]):
                         if k<0 and np.float32(state_dict[key][i][1][0])-np.float32(state_dict[key][i+k][1][0])>time_threshold_past and state_dict[key][i][1][0]=="moving":
                             continue
                         if k>0 and np.float32(state_dict[key][i+k][1][0])-np.float32(state_dict[key][i][1][0])>time_threshold:
-                            if k==1 and state_dict[key][i-2][0]!=state_dict[key][i-3][0] and i>=4:
+                            if k==1 and state_dict[key][i-2][0]!=state_dict[key][i-3][0]:
                                 continue
                                 diff_count=0
                                 same_count=0
