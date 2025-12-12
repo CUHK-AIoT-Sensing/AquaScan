@@ -1006,7 +1006,7 @@ def label_transfer(label_direct,label_save_path,label_type,preprocess_flag,para,
                     obj=label_polar(obj,para[2])
                 label_save(h,s,obj,save_label_single)
                 
-def background_remove(bg,bg_re,sonar_data):
+def background_remove(bg,bg_re,sonar_data): #if you remove the bg with the average intensity of the bg, the data will not be integer value
     clean=sonar_data-bg
     clean[clean<0]=0
     clean_re=sonar_data-bg_re
