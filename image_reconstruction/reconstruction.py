@@ -98,8 +98,8 @@ def __skip_scanning__(image, skip, start_angle, end_angle, start, step):
         for j in range(skip):
             try:
                 # Set skipped rows in the image to 0
-                image[i + j, :] = 0
-                skip_angle.append(i + j)
+                #image[i + j, :] = 0
+                skip_angle.append(i + j) #test version, you can not use the image to recover
             except IndexError:
                 # Safely handle out-of-bounds access
                 continue
@@ -127,13 +127,13 @@ def read_data(filename, skip, start, step):
     #     end_angle = 399
 
     # Initialize ground truth array
-    sonar_gt = np.zeros((len(sonar_data), len(sonar_data[0])))
+    sonar_gt = np.zeros((len(sonar_data), len(sonar_data[0]))) #useless now. this is for the test
     for i in range(len(sonar_gt)):
         for j in range(len(sonar_gt[0])):
             sonar_gt[i][j] = np.float64(sonar_data[i][j])
 
     # Perform scanning with skipping
-    data_skip, info_total = __skip_scanning__(sonar_data, skip, start_angle, end_angle, start + start_angle, step)
+    data_skip, info_total = __skip_scanning__(sonar_data, skip, start_angle, end_angle, start + start_angle, step) #obtain the skipped angle
 
     # Initialize containers for results
     skip_data = []
