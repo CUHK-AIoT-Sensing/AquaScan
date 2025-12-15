@@ -98,8 +98,8 @@ def __skip_scanning__(image, skip, start_angle, end_angle, start, step):
         for j in range(skip):
             try:
                 # Set skipped rows in the image to 0
-                #image[i + j, :] = 0
-                skip_angle.append(i + j) #test version, you can not use the image to recover
+                #image[i + j, :] = 0 #test version, can remove
+                skip_angle.append(i + j) 
             except IndexError:
                 # Safely handle out-of-bounds access
                 continue
