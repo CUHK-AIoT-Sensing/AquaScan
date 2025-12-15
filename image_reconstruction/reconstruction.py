@@ -128,9 +128,9 @@ def read_data(filename, skip, start, step):
 
     # Initialize ground truth array
     sonar_gt = np.zeros((len(sonar_data), len(sonar_data[0]))) #useless now. this is for the test
-    for i in range(len(sonar_gt)):
-        for j in range(len(sonar_gt[0])):
-            sonar_gt[i][j] = np.float64(sonar_data[i][j])
+    #for i in range(len(sonar_gt)):
+    #    for j in range(len(sonar_gt[0])):
+    #        sonar_gt[i][j] = np.float64(sonar_data[i][j])
 
     # Perform scanning with skipping
     data_skip, info_total = __skip_scanning__(sonar_data, skip, start_angle, end_angle, start + start_angle, step) #obtain the skipped angle
