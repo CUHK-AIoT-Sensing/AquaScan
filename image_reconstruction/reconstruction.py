@@ -143,7 +143,7 @@ def read_data(filename, skip, start, step):
 
     # Define the scanning object parameters
     obj = [start_angle, end_angle, 0, 500]
-    polar_data = data_skip[obj[0]:obj[1], obj[2]:obj[3]]
+    polar_data = sonar_data[obj[0]:obj[1], obj[2]:obj[3]]
     sonar_gt = sonar_gt[obj[0]:obj[1], obj[2]:obj[3]]
 
     # Append processed data to respective lists
