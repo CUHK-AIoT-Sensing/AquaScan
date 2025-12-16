@@ -185,7 +185,7 @@ def read_data_process(dirc,dirc_label,save_process_npy,save_img,save_label,label
                 index=np.int32(file[:-4].split("_")[1])
                 print(index,obj)
                 if (index+1)%2==0:
-                    sonar_data=image_shift(sonar_data,12)
+                    sonar_data=image_shift(sonar_data,12) #12 or 13
                     obj=label_shift(obj,12)
                 save_process_data(sonar_data,npy_save_path,img_save_path,True)
                 label_save(h,s,obj,label_save_path)
