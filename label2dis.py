@@ -249,7 +249,7 @@ def generate_loc(sonar,obj,dis=17.0):
     return x_real_aver,y_real_aver,x_real_mid,y_real_mid,[x_aver,y_aver,x_mid,y_mid],[obj[0],obj[1],obj[2],obj[3]],obj[4] #here, x y not represent dis-angle , but a coordinate.
     
 
-def label2pos_seg(sonar_data,detect_obj,objs_gt,states,humans,dis):
+def label2pos_seg(sonar_data,detect_obj,objs_gt,states,humans,dis): #gt is used for reference, you can totally set objs_gt,states,humans as [].
     pos_list=[]
     for i in range(len(detect_obj)):
         iou_max=0.0
