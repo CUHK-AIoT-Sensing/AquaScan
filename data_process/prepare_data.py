@@ -4,7 +4,6 @@ from tqdm import tqdm
 import cv2
 import math, cmath
 from copy import deepcopy
-import random
 import time
 
 def dir_create(dir):
