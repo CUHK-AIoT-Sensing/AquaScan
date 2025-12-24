@@ -4,6 +4,7 @@ from tqdm import tqdm
 import cv2
 import math, cmath
 from copy import deepcopy
+import random
 import time
 
 def dir_create(dir):
@@ -525,6 +526,7 @@ class SonarData():
                 last_candidate_data = candidate_datas[idx]
                 human_id=self.humans_id[-1][idx]
                 if last_obj is None:
+                    #print("none",human_id,i)
                     assert detect_flags[idx] == False
                     candidate_region, candidate_data = self.combine_objects(region, region, 
                                             last_candidate_data, empty_data)
