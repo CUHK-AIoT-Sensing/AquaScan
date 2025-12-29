@@ -232,7 +232,7 @@ class SonarData():
     def __process_one_pic_multi_ch__(self, sonar_data_path, label_file_path, pic_save_dir_path, label_save_dir_path, sonar_str,file,scenario="2022",scenario_set="1.1.1.1",time_start=0.0,last_file=0,compare_method=1):
         ''' process one pic, and it will be split into many pics contains different objects.
             This function only works on multi channel (consider time axis)
-            Use IoU to get same object instead of human id.
+            Use IoU to get same object or use human id.
         Label file format:
             The label file is default format.
             For human object: human id | state_str | xmin | ymin | xmax | ymax
@@ -325,7 +325,7 @@ class SonarData():
         self.__checklen__()
         print(self.past_label_paths)
         #print(human_id_list, state_list, obj_list)
-        # Use IoU to get same object positions from past frames with the current frame
+        # Use IoU or human id to get same object positions from past frames with the current frame
         candidate_regions, candidate_datas = self.compare_objects()
         #print(candidate_datas[-1].shape)
         if candidate_regions is None and candidate_datas is None:
