@@ -753,7 +753,7 @@ class swimmer_state:
         while len(self.duration)>self.length:
             self.duration.remove(self.duration[0])
     
-    def update_duration_ratio(self):
+    def update_duration_ratio(self): #useless 
         time_win=0.0
         if len(self.state_list)==0:
             self.duration_ratio=0.0
@@ -912,7 +912,7 @@ class state_transfer:
         
     def check_state_duration(self):
         duration_info=self.duration[-1]
-        duration_ratio=self.duration_ratio
+        duration_ratio=self.duration_ratio #useless
         if self.cur_state=="motionless":
             if duration_info[0]>=60:
                 return self.dronwing_mark["Duration"][1]
