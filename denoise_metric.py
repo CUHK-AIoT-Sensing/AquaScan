@@ -149,7 +149,37 @@ def read_yolo_label(file_path, W=500, H=400):
             humans.append(human_id)
     return humans, states, obj_list
 
+def generate_miss_iou_map(detected_obj,label_obj):
+    miss_re=np.ones(len(label_obj))
+    correct_re=np.zeros(len(label_obj))
+    record_id=[]
+    record_label=[]
+    correct_re_label=np.zeros(len(label_obj))
+    miss_iou_map=np.zeros((len(label_obj),len(detected_obj)))
+    for i in range(len(label_obj)):
+        for j in range(len(detected_obj)):
+            miss_iou_map[i][j]=cal_IoU(detected_obj[j],label_obj[i],False)
+
+    while (miss_iou_map.any()):
+        max_index=np.unravel_index(np.argmax(miss_iou_map, axis=None), miss_iou_map.shape)
+        max_iou=miss_iou_map[max_index[0]][max_index[1]]
+        print(max_index,max_iou)
+        print(miss_iou_map)
+        if max_iou!=0:
+            miss_re[max_index[0]]=0
+            correct_re[max_index[0]]=max_iou
+            correct_re_label[max_index[0]]=cal_IoU(detected_obj[max_index[1]],label_obj[max_index[0]],True)
+            record_label.append(max_index[0])
+            record_id.append(max_index[1])
+            miss_iou_map[max_index[0],:]=0
+            miss_iou_map[:,max_index[1]]=0
+        else:
+            pass
+    return miss_re,correct_re,correct_re_label
+
 def calculate_statistic(detected_obj, label_obj,detect_path):
+    #print(detected_obj)
+    '''
     miss_re=np.zeros(len(label_obj))
     correct_re=np.zeros(len(label_obj))
     wrong_re=len(detected_obj)-len(label_obj)
@@ -161,30 +191,36 @@ def calculate_statistic(detected_obj, label_obj,detect_path):
     record_id=[]
     record_label=[]
     correct_re_label=np.zeros(len(label_obj))
+    
     for i in range(len(label_obj)):
         max_id=-1
         max_iou=0.0
         for j in range(len(detected_obj)):
             iou_temp=cal_IoU(detected_obj[j],label_obj[i],False)
             iou_label=cal_IoU(detected_obj[j],label_obj[i],True)
+            print(label_obj[i],iou_temp)
             if iou_temp>=max_iou and j not in record_id: #and i not in record_label:
                 max_id=j
                 max_iou=iou_temp
                 max_iou_label=iou_label
         if max_iou==0.0:
+            
             miss_re[i]=1
         else:
             correct_re[i]=max_iou
             correct_re_label[i]=max_iou_label
             record_label.append(i)
             record_id.append(max_id)
+            #print(max_iou)
+    '''
+    miss_re,correct_re,correct_re_label=generate_miss_iou_map(detected_obj,label_obj) 
+    #'''
     detect_num=0
     for k in range(len(miss_re)):
         if miss_re[k]==0:
             detect_num+=1
-    #miss_re[i] is 1: missed, 0: detected
     wrong_re=len(detected_obj)-detect_num
-    #print(miss_re,correct_re,wrong_re,len(detected_obj))
+    print(miss_re,correct_re,wrong_re,len(detected_obj),len(label_obj))
     return miss_re,correct_re,wrong_re,correct_re_label
 
 def inter_section(sec1,sec2):
