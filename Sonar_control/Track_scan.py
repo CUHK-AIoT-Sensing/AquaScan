@@ -1,6 +1,5 @@
 import numpy as np
 import os
-import random
 
 def track(obj, id, time):
     pass
