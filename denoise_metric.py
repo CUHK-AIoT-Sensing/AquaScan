@@ -45,7 +45,7 @@ def read_result(file_path):
     #objs=list(set(objs))
     return objs
 
-def cal_IoU(obj1, obj2, only_label=False):
+def cal_IoU(obj1, obj2, flag=False):
     cross_area=[max(obj1[0],obj2[0]),min(obj1[1],obj2[1]),max(obj1[2],obj2[2]),min(obj1[3],obj2[3])]
     cross=0
     if cross_area[0]>=cross_area[1] or cross_area[2]>=cross_area[3]:
