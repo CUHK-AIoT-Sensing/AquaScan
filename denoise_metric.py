@@ -168,7 +168,7 @@ def generate_miss_iou_map(detected_obj,label_obj):
         if max_iou!=0:
             miss_re[max_index[0]]=0
             correct_re[max_index[0]]=max_iou
-            correct_re_label[max_index[0]]=cal_IoU(detected_obj[max_index[1]],label_obj[max_index[0]],True)
+            correct_re_label[max_index[0]]=cal_IoU(detected_obj[max_index[1]],label_obj[max_index[0]],False)
             record_label.append(max_index[0])
             record_id.append(max_index[1])
             miss_iou_map[max_index[0],:]=0
