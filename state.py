@@ -4,7 +4,7 @@ import matplotlib
 import os
 import time
 import argparse
-
+#read comment before use code
 ##check fre remove -1 in time_start
 #matplotlib.rc('text.latex', preamble=[r'\usepackage{libertine}',r'\usepackage[libertine]{newtxmath}',r'\usepackage{sfmath}',r'\usepackage[T1]{fontenc}'])
 #matplotlib.rc('text', usetex=True)
