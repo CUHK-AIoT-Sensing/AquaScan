@@ -7,7 +7,7 @@ parse_train_args and parse_test_args control train and test separately.
 import argparse
 import os, math
 
-
+#read README
 def parse_common_args(parser):
     parser.add_argument('--model_type', type=str, default='classify', help='change map in model._init__.py')
     parser.add_argument('--data_type', type=str, default='classify', help='change map in data.__init__.py')
