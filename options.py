@@ -5,6 +5,8 @@ from dataclasses import dataclass, field
 import yaml
 from typing import List, Dict
 
+#read readme before using code
+
 @dataclass
 class Option:
     # General
