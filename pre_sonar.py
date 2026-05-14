@@ -353,7 +353,7 @@ def read_default_label_raw(file_path):
     return human_ids, states, objs
 
 
-def data_remove(data,threshold,distance):
+def data_remove(data,threshold,distance,pre):
     #define your pool setting
     return data
 
