@@ -253,7 +253,7 @@ class TrackTree():
                 print(self.tree_dict[i].obj.positions,"-",self.tree_dict[i].parent.obj.positions)
             else:
                 print(self.tree_dict[i].obj.positions,"-")
-                
+    '''            
     def obtain_all_trace(self):
         trace=[]
         check_none_trace=[]
@@ -274,6 +274,27 @@ class TrackTree():
             trace.append(trace_single)
         
         return trace
+    '''  
+    def obtain_all_trace(self):
+        trace=[]
+        check_none_trace=[]
+        for i in range(len(self.bottom)):
+            bottom_node=self.bottom[i]
+            if bottom_node!=None and bottom_node.parent!=None:
+                print(bottom_node.obj.timestamp,bottom_node.obj.positions,bottom_node.obj.state_label)
+                print(bottom_node.parent.obj.timestamp,bottom_node.parent.obj.positions,bottom_node.parent.obj.state_label)
+                print(" ")
+                
+            #check_none_flag=True # if you want to ignore the trace where all subjects are none (false detection), you can set it as False. This paper evaluates the detection and recognition seperately so the confusion metric shows the accuracy of detected subjects and the miss and false detection is evaluated seperately. A better way to is combine two metric together.
+            temp_child=bottom_node
+            trace_single=[]
+            while temp_child!=None:
+                trace_single.append([temp_child.obj.timestamp,temp_child.obj.positions,temp_child.obj.seg,temp_child.obj.state_label,temp_child.obj.frame_id])
+                temp_child=temp_child.parent
+            trace_single.reverse()
+            trace.append(trace_single)
+        
+        return trace 
             
                 
 def check_the_same_node(obj_list):
