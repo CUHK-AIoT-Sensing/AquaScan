@@ -253,7 +253,7 @@ class TrackTree():
                 print(self.tree_dict[i].obj.positions,"-",self.tree_dict[i].parent.obj.positions)
             else:
                 print(self.tree_dict[i].obj.positions,"-")
-    
+                
     def obtain_all_trace(self):
         trace=[]
         check_none_trace=[]
@@ -264,7 +264,7 @@ class TrackTree():
                 print(bottom_node.parent.obj.timestamp,bottom_node.parent.obj.positions,bottom_node.parent.obj.state_label)
                 print(" ")
                 
-            #check_none_flag=True # # if you want to ignore the trace where all subjects are none. none subjects do not attend the activity recognition but I recommend to reserve it.
+            #check_none_flag=True # if you want to ignore the trace where all subjects are none. none subjects do not attend the activity recognition and evaluation but I recommend to reserve it.
             temp_child=bottom_node
             trace_single=[]
             while temp_child!=None:
@@ -273,7 +273,7 @@ class TrackTree():
             trace_single.reverse()
             trace.append(trace_single)
         
-        return trace 
+        return trace
             
                 
 def check_the_same_node(obj_list):
