@@ -7,7 +7,7 @@ from sonar_display import show_sonar
 from data import *
 import matplotlib.pyplot as plt
 import matplotlib
-import Track_scan
+import Scan
 import os
 from sonar_display import *
 from datetime import datetime
@@ -24,7 +24,7 @@ _firmwareMaxSamplePeriod = 40000
 speed_of_sound = 1500
 background_path = ""
 
-def cal_sample_period(dis, number_samples): #you can refer the implementation of BlueRobotics Engineering https://discuss.bluerobotics.com/t/please-provide-some-answer-regards-ping360/6393/3
+def cal_sample_period(dis, number_samples):
     return 2 * dis / (number_samples * speed_of_sound * sample_fixed_duration)
 
 
@@ -78,7 +78,7 @@ def rescan(former_object, distance, number_sample, k, images):
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='Control the sonar')
-    parser.add_argument('--mode', type=int, default=3, help="0-time control scan result, 1-count control scan result, 2-tracking schemes")
+    parser.add_argument('--mode', type=int, default=3, help="different mode")
     parser.add_argument('--udp', action="store", required=False, type=str, default="192.168.1.13:12345", help="host:port")
     parser.add_argument('--speed', default=1500, required=False, help="define the speed of sound underwater")
     parser.add_argument('--dis', default=15, type=int, required=False, help="define the sonar ranging")
@@ -205,7 +205,7 @@ if __name__ == '__main__':
                 x_angle = x_angle - stop_angle - 1 + start_angle
             else:
                 p.control_transducer(
-                    0, #this is reserved from the ROS2 of ping360
+                    0,
                     p._gain_setting,
                     x_angle,
                     p._transmit_duration,
@@ -301,7 +301,7 @@ if __name__ == '__main__':
         end_angle = args.end
         scan_continue = args.step
         skipping = args.skip
-        scanning_angle = Track_scan.ignore_scanning_scheme(start_angle, stop_angle, scan_continue, skipping)
+        scanning_angle = Scan.ignore_scanning_scheme(start_angle, stop_angle, scan_continue, skipping)
         count = 0
         while count < total_count:
             print(count)
@@ -343,7 +343,7 @@ if __name__ == '__main__':
             txt_save_path = os.path.join(path_save_data + str(args.mode) +"/" ,  batch_id, 'sonar' + sonar_num)
             os.makedirs(txt_save_path, exist_ok=True)
             fileObject = open("mode_"+ str(args.mode) +"/"+ batch_id + '/sonar'+ sonar_num + '/'+ local_time+ '_'+ str(count) + '.txt', 'w')
-            scanning_angle = Track_scan.back_forth_scanning_scheme(start_angle, end_angle, scan_step, count)
+            scanning_angle = Scan.back_forth_scanning_scheme(start_angle, end_angle, scan_step, count)
             for i in range(len(scanning_angle)):
                 # if args.data:
                     p.control_transducer(
@@ -413,9 +413,9 @@ if __name__ == '__main__':
             os.makedirs(txt_save_path, exist_ok=True)
             fileObject = open("mode_"+ str(args.mode) +"/"+ batch_id + '/sonar'+ sonar_num + '/'+ local_time+ '_'+ str(count) + '.txt', 'w')
             if count%2 == 0:
-                scanning_angle = Track_scan.ignore_scanning_scheme(start_angle, stop_angle, scan_continue, skipping)
+                scanning_angle = Scan.ignore_scanning_scheme(start_angle, stop_angle, scan_continue, skipping)
             else:
-                scanning_angle = Track_scan.ignore_scanning_scheme(start_angle, stop_angle, scan_continue, skipping)
+                scanning_angle = Scan.ignore_scanning_scheme(start_angle, stop_angle, scan_continue, skipping)
                 scanning_angle.reverse()
 
             for i in range(len(scanning_angle)):
@@ -442,7 +442,7 @@ if __name__ == '__main__':
             fileObject.close()
             count = count + 1
 
-    else:#now we do not use this method.
+    else:
         local_time = time.strftime("%Y-%m-%d-%H-%M-%S", time.localtime())
         # file_save=open(local_time+"_"+path_save_data,"w")
         start_time = time.time()
