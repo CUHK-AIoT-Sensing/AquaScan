@@ -249,7 +249,8 @@ def generate_loc(sonar,obj,dis=17.0):
     return x_real_aver,y_real_aver,x_real_mid,y_real_mid,[x_aver,y_aver,x_mid,y_mid],[obj[0],obj[1],obj[2],obj[3]],obj[4] #here, x y not represent dis-angle , but a coordinate.
     
 
-def label2pos_seg(sonar_data,detect_obj,objs_gt,states,humans,dis):
+'''
+def label2pos_seg(sonar_data,detect_obj,objs_gt,states,humans,dis): #objs_gt for references.
     pos_list=[]
     for i in range(len(detect_obj)):
         #iou_max=0.0
@@ -264,6 +265,13 @@ def label2pos_seg(sonar_data,detect_obj,objs_gt,states,humans,dis):
         pos_list.append([x,y,x_mid,y_mid,polar_pos,obj,obj_scale,"ref","-1"]) #states[iou_max_index],states[iou_max_index],humans[iou_max_index]
         #else:
         #    pos_list.append([x,y,x_mid,y_mid,polar_pos,obj,obj_scale,"none","-1"])
+    return pos_list
+'''
+def label2pos_seg(sonar_data,detect_obj,dis):
+    pos_list=[]
+    for i in range(len(detect_obj)):
+        x,y,x_mid,y_mid,polar_pos,obj,obj_scale=generate_loc(sonar_data,detect_obj[i],dis)
+        pos_list.append([x,y,x_mid,y_mid,polar_pos,obj,obj_scale,"ref","-1"]) 
     return pos_list
 
 def write_pos(pos,save_file):
