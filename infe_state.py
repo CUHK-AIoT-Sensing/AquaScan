@@ -37,58 +37,40 @@ class Evaluator:
         self.val_loader = select_eval_loader(self.args)
         self.logger = Logger(self.args)
 
+    
     def eval(self):
-        acc = AverageMeter()
-        recall = AverageMeter()
-        precision = AverageMeter()
-        scenario_acc_dict = {}
-        scenario_frame={}
         scenario_re={}
         CM = None
         time_count=0.0
-        gt_list=None
         pred_list=None
         self.model.eval()
+        #print(next(self.model.parameters()).device)
         with torch.no_grad():
-            for idx, (x, label, filename, scenario,file,human,sonar) in enumerate(self.val_loader):  #label has been set as -1 or ref during the inference stage.
+            for i, (x, _, _, scenario,file,human,sonar) in enumerate(self.val_loader):
                 #torch.no_grad()
-                #print(x.shape)
+                print(x.shape)
                 if self.enable_cuda:
                     x = x.cuda(non_blocking=True)
-                    label = label.cuda(non_blocking=True)
                 time_temp=time.time()
-                bsz = label.size(0)
+
                 pred = self.model(x)
-                bsz = label.size(0)
+
                 #print(bsz)
                 if pred_list==None:
                     pred_list=pred
                 else:
                     pred_list=torch.concat([pred_list,pred])
-                if gt_list==None:
-                    gt_list=label
-                else:
-                    gt_list=torch.concat([gt_list,label])
                 time_count+=time.time()-time_temp
                 #metrics = self.compute_metrics(pred, label)
                 #acc.update(metrics['acc'], bsz)
                 #recall.update(metrics['recall'], bsz)
                 #precision.update(metrics['precision'], bsz)
-                for s, p,p_arg, l,f,h,s_n in zip(scenario, pred, pred.argmax(dim=1),label,file,human,sonar):
+                for s, p,p_arg,f,h,s_n in zip(scenario, pred, pred.argmax(dim=1),file,human,sonar):
                     temp_p=p.cpu()
                     if s not in scenario_re:
-                        scenario_re[s]=[[temp_p.detach().numpy(),p_arg.cpu().detach().numpy(),l.cpu().detach().numpy(),f,h,s_n]]
+                        scenario_re[s]=[[temp_p.detach().numpy(),p_arg.cpu().detach().numpy(),"-1",f,h,s_n]]
                     else:
-                        scenario_re[s].append([temp_p.detach().numpy(),p_arg.cpu().detach().numpy(),l.cpu().detach().numpy(),f,h,s_n])
-                    if s not in scenario_acc_dict:
-                        scenario_acc_dict[s] = AverageMeter()
-                        scenario_frame[s]=1
-                    if p_arg == l:
-                        scenario_acc_dict[s].update(1, 1)
-                        scenario_frame[s]+=1
-                    else:
-                        scenario_acc_dict[s].update(0, 1)
-                        scenario_frame[s]+=1
+                        scenario_re[s].append([temp_p.detach().numpy(),p_arg.cpu().detach().numpy(),"-1",f,h,s_n])
 
                 #if CM is None:
                 #    CM = self.compute_confusion_matrix(pred, label)
@@ -108,24 +90,25 @@ class Evaluator:
             acc_all.update(metrics_all['acc'], bsz_all)
             recall_all.update(metrics_all['recall'], bsz_all)
             precision_all.update(metrics_all['precision'], bsz_all)
-            print(time_count)
+            
+            #print(time_count)
             result_txt_path = os.path.join(self.args.result_dir, 'result.txt')
             
             # write metrics to result dir,
             # you can also use pandas or other methods for better stats
             with open(result_txt_path, 'w') as fd:
-                fd.write("=== metrics ===\n")
-                fd.write(str(metrics_all))
+                #fd.write("=== metrics ===\n")
+                #fd.write(str(metrics_all))
                 #fd.write("acc:"+str(acc_all.avg)+" recall:"+str(recall_all.avg)+" precision:"+str(precision_all.avg)+"\n")
                 fd.write('\n')
                 fd.write("=== scenario acc ===\n")
                 for s in scenario_acc_dict:
                     fd.write("{}: {}, {} \n".format(s, scenario_acc_dict[s].avg,scenario_frame[s]))
                     fd.write('\n')
-                fd.write("=== confusion matrix ===\n")
-                fd.write(str(CM))
-                fd.write('\n')
-
+                #fd.write("=== confusion matrix ===\n")
+                #fd.write(str(CM))
+                #fd.write('\n')
+            
             # draw confusion matrix
             CM = CM / CM.sum(axis=1)[:, None]
             ticklabels = ['swimming','standing','patting', 'struggling', 'drowning']
@@ -140,7 +123,7 @@ class Evaluator:
             #print("save")
             #for s in scenario_acc_dict:
             #    print("{}: {}, {}".format(s, scenario_acc_dict[s].avg, scenario_frame[s]))
-            '''
+            '''        
             new_dir=self.args.result_dir+"/record"
             if not os.path.exists(new_dir):
                 os.makedirs(new_dir)
